@@ -56,7 +56,7 @@ or :
 		//etc. ...
 	});
 
-See [samples/01-user.html](blob/master/samples/01-user.html)
+See `/samples/01-user.html`
 
 ###Extend User
 
@@ -87,7 +87,7 @@ I've cribbed the [Backbone](http://backbonejs.org/) object model :
 		});
 	})
 
-See [samples/02-user.html](samples/02-user.html)
+See `samples/02-user.html`
 
 ##GitHub Repository : Gh3.Repository
 
@@ -132,7 +132,7 @@ You can do that too :
 
 	})
 
-See [samples/03-repository.html](samples/03-repository.html)
+See `samples/03-repository.html`
 
 ##GitHub Branch : Gh3.Branch
 
@@ -166,7 +166,7 @@ You have to declare, get repository informations and fetch branches before calli
 		})
 	});
 
-See [samples/04-branch.html](samples/04-branch.html)
+See `samples/04-branch.html`
 
 You obtain a list of files and directories. You can directly fetch raw content of a file or fetch contents of a directory.
 
@@ -198,7 +198,7 @@ You obtain a list of files and directories. You can directly fetch raw content o
 		
 	});
 
-See [samples/05-file.html](samples/05-file.html)
+See `samples/05-file.html`
 
 ###Get commits of a file
 
@@ -211,7 +211,7 @@ See [samples/05-file.html](samples/05-file.html)
 		});
 
 
-See [samples/05-file.html](samples/05-file.html)
+See `samples/05-file.html`
 
 ##GitHub Directory : Gh3.Dir
 
@@ -242,7 +242,7 @@ It works much like a `Gh3.Branch`.
 		
 	});
 
-See [samples/06-dir.html](samples/06-dir.html)
+See `samples/06-dir.html`
 
 ##GitHub Gists : Gh3.Gists
 
@@ -262,7 +262,7 @@ See [samples/06-dir.html](samples/06-dir.html)
 		});
 	});
 
-See [samples/07-gists.html](samples/07-gists.html)
+See `samples/07-gists.html`
 
 ##GitHub Gist : Gh3.Gist
 
@@ -293,7 +293,7 @@ See [samples/07-gists.html](samples/07-gists.html)
 
 	console.log(oneGist.getFileByName("use.thing.js").content);
 
-See [samples/07-gists.html](samples/07-gists.html)
+See `samples/07-gists.html`
 
 ###Get comments of a public gist
 
@@ -309,6 +309,6 @@ See [samples/07-gists.html](samples/07-gists.html)
 		});
 	});
 
-See [samples/07-gists.html](samples/07-gists.html)
+See `samples/07-gists.html`
 
 ... to be continued
