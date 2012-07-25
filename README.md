@@ -1,5 +1,4 @@
-gh3
-===
+#gh3
 
 **gh3** is a client-side Javascript API v3 wrapper for GitHub
 
