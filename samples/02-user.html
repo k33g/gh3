@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>gh3</title>
+    
+</head>
+<body>
+	<ul id="users"></ul>
+</body>
+<script src="../vendors/jquery-1.7.2.js"></script>
+<script src="../vendors/underscore.js"></script>
+<script src="../gh3.js"></script>
+<script>
+
+	var GitHubUser = Gh3.User.extend({//instance members
+		constructor : function(login) {
+			GitHubUser.__super__.constructor.call(this, login);
+			GitHubUser.allUsers.push(this);
+		}
+	},{ //Static members
+		allUsers : [],
+		each : function (callback) {
+			_.each(GitHubUser.allUsers, function (user) {
+				callback(user);
+			})
+		}
+	});
+
+	var k33g = new GitHubUser("k33g")
+	,	loicdescotte = new GitHubUser("loicdescotte")
+	,	mklabs = new GitHubUser("mklabs")
+	,	chamerling = new GitHubUser("chamerling")
+	,	usersInfos = $("#users");
+	
+	GitHubUser.each(function (user) {
+		user.fetch(function () {
+			usersInfos.append("<li><ul id='"+user.login+"'>");
+			var tmp_ul = $("#"+user.login);
+			_.each(_.keys(user), function (prop) {
+				tmp_ul.append(
+					$('<li>').append(prop+" : "+user[prop])
+				);
+			});
+		});
+	})
+
+		
+</script>
+</html>
