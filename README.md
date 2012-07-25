@@ -56,7 +56,7 @@ or :
 		//etc. ...
 	});
 
-See [samples/01-user.html](samples/01-user.html)
+See [samples/01-user.html](tree/master/samples/01-user.html)
 
 ###Extend User
 
