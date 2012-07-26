@@ -142,6 +142,8 @@ See `samples/03-repository.html`
 - `getFileByName(file_name)` : return a `Gh3.File` instance found by name (you have to call `fetchContents()` before)
 - `getDirByName(dir_name)` : return a `Gh3.Dir` instance found by name (you have to call `fetchContents()` before)
 - `eachContent(callback)` : execute `callback` for each content item of the branch (you have to call `fetchContents()` before)
+- `reverseContents()` : reverse order of contents
+- `sortContents(comparator)` : sort contents
 
 ##Get contents of a branch
 
@@ -223,6 +225,8 @@ It works much like a `Gh3.Branch`.
 - `getFileByName(file_name)` : return a `Gh3.File` instance found by name (you have to call `fetchContents()` before)
 - `getDirByName(dir_name)` : return a `Gh3.Dir` instance found by name (you have to call `fetchContents()` before)
 - `eachContent(callback)` : execute `callback` for each content item of the directory (you have to call `fetchContents()` before)
+- `reverseContents()` : reverse order of contents
+- `sortContents(comparator)` : sort contents
 
 ###Get contents of a directory
 
