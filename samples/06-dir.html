@@ -38,6 +38,9 @@
 
 				dir.fetchContents(function () {
 					console.log(dir.getContents());
+					
+					dir.reverseContents();
+					
 					dir.eachContent(function (content) {
 						console.log(content.name, content.type, content.size);
 						dirContents.append('<li>'+content.name+" type : "+content.type+" size : "+content.size);

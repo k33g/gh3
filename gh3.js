@@ -1,6 +1,15 @@
 /*
 	gh3.js
-	2012.07.25 by k33g
+	Created : 2012.07.25 by k33g
+
+	TODO :
+		- sort & reverse for commits
+		- sort & reverse for comments
+		- ...
+
+	History :
+		- 2012.07.25 : '0.0.1'
+		- 2012.07.26 : '0.0.2'
 */
 
 (function(){
@@ -9,7 +18,7 @@
 	,	Kind
 	,	Base64;
 	
-	Gh3.VERSION = '0.0.1';
+	Gh3.VERSION = '0.0.2'; //2012.07.26
 	
 	//Object Model Tools (helpers) like Backbone
 	Kind = function(){};
@@ -369,7 +378,16 @@
 				}
 			});
 		},
-
+		reverseContents : function () {
+			this.contents.reverse();
+		},
+		sortContents : function (comparison_func) {
+			if (comparison_func) {
+				this.contents.sort(comparison_func);
+			} else {
+				this.contents.sort();
+			}
+		},
 		getContents : function() { return this.contents; },
 		getFileByName : function (name) {
 			return _.find(this.contents, function (item) {
@@ -419,7 +437,16 @@
 				}
 			});
 		},
-
+		reverseContents : function () {
+			this.contents.reverse();
+		},
+		sortContents : function (comparison_func) {
+			if (comparison_func) {
+				this.contents.sort(comparison_func);
+			} else {
+				this.contents.sort();
+			}
+		},
 		getContents : function() { return this.contents; },
 		getFileByName : function (name) {
 			return _.find(this.contents, function (item) {
