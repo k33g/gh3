@@ -251,7 +251,14 @@ See `samples/06-dir.html`
 
 ####Methods of Gh3.Gists
 
-- `fetch(callback, callbackErr)` : retrieve `Gh3.Gist` instances of a user
+- `fetch(callback, callbackErr, pagesInfo, paginationInfo)` : retrieve `Gh3.Gist` instances of a user
+    - `pagesInfo` : number of pages
+    - `paginationInfo` : number of gists per page
+    - `paginationInfo` : which page. Possible values : see [http://developer.github.com/v3/#pagination](http://developer.github.com/v3/#pagination)
+        * "next"
+        * "last"
+        * "first"
+        * "prev"
 - `getGists()` : return array of `Gh3.Gist` instances (you have to call `fetch()` before)
 - `eachGist` : execute `callback` for each gist of the user (you have to call `fetch()` before)
 
@@ -264,6 +271,14 @@ See `samples/06-dir.html`
 			console.log(gist.description, gist.id);
 		});
 	});
+
+###Get public gists of a user : five gists of the next page
+
+	GistsOfK33g.fetch(function () {		
+		GistsOfK33g.eachGist(function (gist) {
+			console.log(gist.description, gist.id);
+		});
+	},function(){//onerror},{page:2, per_page:5}, "next");
 
 See `samples/07-gists.html`
 

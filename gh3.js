@@ -8,8 +8,9 @@
 		- ...
 
 	History :
-		- 2012.07.25 : '0.0.1'
-		- 2012.07.26 : '0.0.2'
+		- 2012.07.25 : '0.0.1' : first version
+		- 2012.07.26 : '0.0.2' : fixes
+		- 2012.07.26 : '0.0.3' : gists pagination
 */
 
 (function(){
@@ -18,7 +19,7 @@
 	,	Kind
 	,	Base64;
 	
-	Gh3.VERSION = '0.0.2'; //2012.07.26
+	Gh3.VERSION = '0.0.3'; //2012.07.27
 	
 	//Object Model Tools (helpers) like Backbone
 	Kind = function(){};
@@ -248,11 +249,13 @@
 			if (ghUser) this.user = ghUser;
 			this.gists = []
 		}, 
-		fetch : function (callback, callbackErr) {
+		fetch : function (callback, callbackErr, pagesInfo, paginationInfo) {//http://developer.github.com/v3/#pagination
 			var that = this;
 			$.ajax({
 				url : "https://api.github.com/users/"+that.user.login+"/gists",
 				dataType: 'jsonp',
+				data : pagesInfo,
+				beforeSend: function (xhr) { xhr.setRequestHeader ("rel", paginationInfo); },
 				success : function(res) {
 					_.each(res.data, function (gist) {
 						that.gists.push(new Gh3.Gist(gist));

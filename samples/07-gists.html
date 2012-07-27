@@ -2,9 +2,7 @@
 <html>
 <head>
     <meta charset="utf-8">
-    <title>gh3</title>
-    <ul></ul>
-    
+    <title>gh3</title>    
 </head>
 <body>
 	<h1></h1>
@@ -22,12 +20,15 @@
 	var GistsOfK33g = new Gh3.Gists(new Gh3.User("k33g"));
 	
 	GistsOfK33g.fetch(function () {
+		//console.log(GistsOfK33g.getGists());
+		
 		GistsOfK33g.eachGist(function (gist) {
 			//console.log(gist.description, gist.id);
 			gistsList.append('<li>'+gist.description+" "+gist.id);
 		});
-	});
+	},function(){},{page:2, per_page:5}, "next");
 
+	
 	var oneGist = new Gh3.Gist({id:"2287018"});
 	oneGist.fetchContents(function(){
 		console.log("oneGist : ", oneGist);
