@@ -252,8 +252,7 @@ See `samples/06-dir.html`
 ####Methods of Gh3.Gists
 
 - `fetch(callback, callbackErr, pagesInfo, paginationInfo)` : retrieve `Gh3.Gist` instances of a user
-    - `pagesInfo` : number of pages
-    - `paginationInfo` : number of gists per page
+    - `pagesInfo` : `{ pages : number_of_pages, per_page : number_of_gists_per page }`
     - `paginationInfo` : which page. Possible values : see [http://developer.github.com/v3/#pagination](http://developer.github.com/v3/#pagination)
         * "next"
         * "last"
