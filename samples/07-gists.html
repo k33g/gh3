@@ -20,7 +20,7 @@
 	var GistsOfK33g = new Gh3.Gists(new Gh3.User("k33g"));
 	
 	GistsOfK33g.fetch(function () {
-		//console.log(GistsOfK33g.getGists());
+		console.log(GistsOfK33g.getGists());
 		
 		GistsOfK33g.eachGist(function (gist) {
 			//console.log(gist.description, gist.id);
@@ -28,6 +28,14 @@
 		});
 	},function(){},{page:2, per_page:5}, "next");
 
+	var AllGistsOfK33g = new Gh3.Gists(new Gh3.User("k33g"));
+	AllGistsOfK33g.fetch(function () {
+		//console.log("All gists : ", AllGistsOfK33g.getGists());
+		console.log("Filtered gists : ", AllGistsOfK33g.filter(function (gist) {
+			return gist.comments > 0;
+		}));
+		
+	},function(){},{page:1, per_page:500});
 	
 	var oneGist = new Gh3.Gist({id:"2287018"});
 	oneGist.fetchContents(function(){

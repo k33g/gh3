@@ -20,6 +20,13 @@
 	,	branchTitle = $("h2")
 	,	branchProperties = $("ul");
 
+	//get all repositories of k33g
+	var k33gRepositories = new Gh3.Repositories(k33g);
+	k33gRepositories.fetch(function () {
+		console.log("Repositories", k33gRepositories);
+	}, function(){/*error*/},{page:5, per_page:5, direction : "desc"},"next");
+
+	//get one repository
 	var k33gBlog = new Gh3.Repository("k33g.github.com", k33g);
 
 	k33gBlog.fetch(function () {

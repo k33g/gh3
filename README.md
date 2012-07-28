@@ -9,9 +9,10 @@
 
 ##Bundled with gh3 :
 
-gh3 cames with 9 kinds of object's type :
+gh3 cames with 10 kinds of object's type :
 
 - `Gh3.User`
+- `Gh3.Repositories`
 - `Gh3.Repository`
 - `Gh3.Branch`
 - `Gh3.Dir` inherits of `Gh3.ItemContent`
@@ -88,6 +89,35 @@ I've cribbed the [Backbone](http://backbonejs.org/) object model :
 
 See `samples/02-user.html`
 
+##GitHub Repositories of a user : Gh3.Repositories
+
+###Declare and Get Repositories of a user
+
+	var k33gRepositories = new Gh3.Repositories(k33g);
+	k33gRepositories.fetch(function () {
+		console.log("Repositories", k33gRepositories);
+	}, function(){/*error*/},{page:1, per_page:500, direction : "desc"});
+	//all repositories, one page, 500 items per page, sort : descending
+
+####Methods of Gh3.Repositories
+
+- `fetch(callback, callbackErr, pagesInfoAndParameters, paginationInfo)` retrieve `Gh3.Repositoriy` instances of a user
+    - `pagesInfoAndParameters` : `{ pages : number_of_pages, per_page : number_of_repositories_per page }`
+    - you can pass other parameters as : `direction : "desc"`, see [http://developer.github.com/v3/repos/](http://developer.github.com/v3/repos/)
+    - `paginationInfo` : which page. Possible values : see [http://developer.github.com/v3/#pagination](http://developer.github.com/v3/#pagination)
+        * "next"
+        * "last"
+        * "first"
+        * "prev"
+- `getRepositories()` : return an array of `Gh3.Repositoriy` instances (you have to call `fetch()` before)
+- `getRepositoryByName(name)` : get a repository by his name (you have to call `fetch()` before)
+- `eachRepository(callback)` : execute `callback` for each repository of the user (you have to call `fetch()` before)
+- `reverseRepositories()` : reverse order of repositories (you have to call `fetch()` before)
+- `sortRepositories(comparator)` : sort repositories (you have to call `fetch()` before)
+- `filterRepositories(comparator)` : return an array of `Gh3.Repositoriy` instances filtered by `comparator`  (you have to call `fetchContents()` before)
+
+See `samples/03-repository.html`
+
 ##GitHub Repository : Gh3.Repository
 
 ###Declare and Get Repository informations
@@ -102,11 +132,13 @@ See `samples/02-user.html`
 
 ####Methods of Gh3.Repository
 
-- `getBranches` : return array of `Gh3.Branch` instances
+- `getBranches()` : return array of `Gh3.Branch` instances
 - `fetch(callback, callbackErr)` : retrieve repository's informations
 - `fetchBranches(callback, callbackErr)` : retrieve repository's branches (you have to call `fetch()` before)
 - `getBranchByName(branch_name)` : return a `Gh3.Branch` instance found by name (you have to call `fetchBranches()` before)
 - `eachBranch(callback)` : execute `callback` for each branch of the repository (you have to call `fetchBranches()` before)
+- `reverseBranches()` : reverse order of branches
+- `sortBranches(comparator)` : sort branches
 
 ###Get Branches of Repository
 
@@ -144,6 +176,7 @@ See `samples/03-repository.html`
 - `eachContent(callback)` : execute `callback` for each content item of the branch (you have to call `fetchContents()` before)
 - `reverseContents()` : reverse order of contents
 - `sortContents(comparator)` : sort contents
+- `filterContents(comparator)` : return an array of `Gh3.ItemContent` instances filtered by `comparator`  (you have to call `fetchContents()` before)
 
 ##Get contents of a branch
 
@@ -182,6 +215,9 @@ You obtain a list of files and directories. You can directly fetch raw content o
 - `getLastCommit()` : return last `Gh3.Commit` instance
 - `getFirstCommit()` : return first `Gh3.Commit` instance
 - `eachCommit(callback)` : execute `callback` for each commit of the file (you have to call `fetchCommits()` before)
+- `filterCommits(comparator)` : return an array of `Gh3.Commit` instances filtered by `comparator`  (you have to call `fetchCommits()` before)
+- `reverseCommits()` : reverse order of commits
+- `sortCommits(comparator)` : sort commits
 
 ###Get raw content of a file
 
@@ -227,6 +263,7 @@ It works much like a `Gh3.Branch`.
 - `eachContent(callback)` : execute `callback` for each content item of the directory (you have to call `fetchContents()` before)
 - `reverseContents()` : reverse order of contents
 - `sortContents(comparator)` : sort contents
+- `filterContents(comparator)` : return an array of `Gh3.ItemContent` instances filtered by `comparator`  (you have to call `fetchContents()` before)
 
 ###Get contents of a directory
 
@@ -258,8 +295,9 @@ See `samples/06-dir.html`
         * "last"
         * "first"
         * "prev"
-- `getGists()` : return array of `Gh3.Gist` instances (you have to call `fetch()` before)
+- `getGists()` : return an array of `Gh3.Gist` instances (you have to call `fetch()` before)
 - `eachGist` : execute `callback` for each gist of the user (you have to call `fetch()` before)
+- `filter(comparator)` : return an array of `Gh3.Gist` instances filtered by `comparator`  (you have to call `fetch()` before)
 
 ###Get public gists of a user
 
@@ -281,6 +319,17 @@ See `samples/06-dir.html`
 
 See `samples/07-gists.html`
 
+###Get public gists of a user only if they have comment(s)
+
+	AllGistsOfK33g.fetch(function () {
+		console.log("Filtered gists : ", AllGistsOfK33g.filter(function (gist) {
+			return gist.comments > 0;
+		}));
+		
+	},function(){//onerror},{page:1, per_page:500});
+
+See `samples/07-gists.html`
+
 ##GitHub Gist : Gh3.Gist
 
 ####Methods of Gh3.Gist
@@ -292,6 +341,7 @@ See `samples/07-gists.html`
 - `eachFile(callback)` : execute `callback` for each file of the gist (you have to call `fetchContents()` before)
 - `getComments()` : return an array of `Gh3.GistComment` instances
 - `eachComment(callback)` : execute `callback` for each comment of the gist (you have to call `fetchComments()` before)
+- `filterComments(comparator)` : return an array of `Gh3.GistComment` instances filtered by `comparator`  (you have to call `fetchComments()` before)
 
 ###Get a public gist by id
 
@@ -327,5 +377,22 @@ See `samples/07-gists.html`
 	});
 
 See `samples/07-gists.html`
+
+###Filter comments of a public gist
+
+	var PaulIrishGist = new Gh3.Gist({id:"3098860"});
+	PaulIrishGist.fetchContents(function(){
+		
+		PaulIrishGist.fetchComments(function () {
+			console.log(
+				PaulIrishGist.filterComments(function (comment) {
+					return comment.user.login == "codepo8";
+				})
+			);
+		});
+
+	});
+
+See `samples/08-gists_comments.html`
 
 ... to be continued

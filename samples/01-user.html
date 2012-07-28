@@ -18,6 +18,8 @@
 
 	k33g.fetch(function (){
 
+		console.log(k33g);
+
 		_.each(_.keys(k33g), function (prop) {
 			userInfos.append(
 				$('<li>').append(prop+" : "+k33g[prop])
