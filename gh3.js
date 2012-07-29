@@ -18,6 +18,9 @@
 			* file commits filtering
 			* commits sorting
 			* new Type : Gh3.Repositories (with pagination)
+		- 2012.07.29 : '0.0.5' :
+			* Gh3.Repositories : add search ability		
+			* add Gh3.Users : search user ability	
 */
 
 (function(){
@@ -26,7 +29,7 @@
 	,	Kind
 	,	Base64;
 	
-	Gh3.VERSION = '0.0.4'; //2012.07.28
+	Gh3.VERSION = '0.0.5'; //2012.07.29
 	
 	//Object Model Tools (helpers) like Backbone
 	Kind = function(){};
@@ -163,9 +166,67 @@
 		}
 	});
 
+	Gh3.Users = Kind.extend({
+
+	},{//static members
+		users : [],
+		search : function (keyword, callback, callbackErr, pagesInfo) {
+			Gh3.Users.users = [];
+			Gh3.Helper.callHttpApi({
+				service : "legacy/user/search/"+keyword,
+				data : pagesInfo,
+				//beforeSend: function (xhr) { xhr.setRequestHeader ("rel", paginationInfo); },
+				success : function(res) {
+					//console.log("*** : ", res);
+					_.each(res.data.users, function (user) {
+						Gh3.Users.users.push(new Gh3.User(user.login, user));
+					});
+					
+					if (callback) callback(Gh3.Users);
+				},
+				error : function (res) {
+					if (callbackErr) callbackErr(res);
+				}
+			});
+
+		},
+		reverse : function () {
+			Gh3.Users.users.reverse();
+		},
+		sort : function (comparison_func) {
+			if (comparison_func) {
+				Gh3.Users.users.sort(comparison_func);
+			} else {
+				Gh3.Users.users.sort();
+			}
+		},
+		getAll : function() { return Gh3.Users.users; },
+		getByName : function (name) {
+			return _.find(Gh3.Users.users, function (item) {
+				return item.name == name;
+			});
+		},
+		each : function (callback) {
+			_.each(Gh3.Users.users, function (user) {
+				callback(user);
+			});
+		},
+		filter : function (comparator) {
+			return _.filter(Gh3.Users.users, comparator);
+		}
+
+	});
+
 	Gh3.User = Kind.extend({
 	
-		constructor : function (login) {
+		constructor : function (login, user_infos) {
+
+			if (user_infos) {
+				for(var prop in user_infos) {
+					this[prop] = user_infos[prop];
+				}
+			}
+
 			if (login) {
 				this.login = login; 
 			} else { 
@@ -187,22 +248,6 @@
 					if (callbackErr) callbackErr(res);
 				}
 			});
-
-			/*
-			$.ajax({
-				url : "https://api.github.com/users/"+that.login,
-				dataType: 'jsonp',
-				success : function (res) {
-					for(var prop in res.data) {
-						that[prop] = res.data[prop];
-					}
-					if (callback) callback(that);
-				},
-				error : function (res) {
-					if (callbackErr) callbackErr(res);
-				}
-			});
-			*/
 			
 		}
 		
@@ -242,20 +287,7 @@
 				}
 			});
 
-			/*
-			$.ajax({
-				url : "https://api.github.com/gists/"+that.id,
-				dataType: 'jsonp',
-				success : function(res) {
-					for(var prop in res.data) {
-						that[prop] = res.data[prop];
-					}
-					if (callback) callback(that);
-				},
-				error : function (res) {
-					if (callbackErr) callbackErr(res);
-				}
-			});*/
+
 		},
 		fetchComments : function (callback, callbackErr) {
 			var that = this;
@@ -274,22 +306,7 @@
 					if (callbackErr) callbackErr(res);
 				}
 			});
-
-			/*
-			$.ajax({
-				url : "https://api.github.com/gists/"+that.id+"/comments",
-				dataType: 'jsonp',
-				success : function(res) {
-					_.each(res.data, function (comment) {
-						that.comments.push(new Gh3.GistComment(comment));
-					});
-					if (callback) callback(that);
-				},
-				error : function (res) {
-					if (callbackErr) callbackErr(res);
-				}
-			});	
-			*/		
+	
 		},
 		getFileByName : function (name) {
 			return this.files[name];
@@ -337,23 +354,6 @@
 				}
 			});
 
-			/*
-			$.ajax({
-				url : "https://api.github.com/users/"+that.user.login+"/gists",
-				dataType: 'jsonp',
-				data : pagesInfo,
-				beforeSend: function (xhr) { xhr.setRequestHeader ("rel", paginationInfo); },
-				success : function(res) {
-					_.each(res.data, function (gist) {
-						that.gists.push(new Gh3.Gist(gist));
-					});
-					if (callback) callback(that);
-				},
-				error : function (res) {
-					if (callbackErr) callbackErr(res);
-				}
-			});
-			*/
 		},
 
 		getGists : function () { return this.gists; },
@@ -412,21 +412,7 @@
 					if (callbackErr) callbackErr(res);
 				}
 			});
-			/*
-			$.ajax({
-				url : "https://api.github.com/repos/"+that.user.login+"/"+that.repositoryName+"/contents/"+that.path,
-				dataType: 'jsonp',
-				success : function(res) {
-					that.content = res.data.content;
-					that.rawContent = Base64.decode(res.data.content);
 
-					if (callback) callback(that);
-				},
-				error : function (res) {
-					if (callbackErr) callbackErr(res);
-				}
-			});
-			*/
 		},
 		fetchCommits : function (callback, callbackErr) {//http://developer.github.com/v3/repos/commits/
 			var that = this;
@@ -446,22 +432,6 @@
 				}
 			});
 
-			/*
-			$.ajax({
-				url : "https://api.github.com/repos/"+that.user.login+"/"+that.repositoryName+"/commits",
-				dataType: 'jsonp',
-				data : {path: that.path },
-				success : function(res) {
-					_.each(res.data, function (commit) {
-						that.commits.push(new Gh3.Commit(commit));
-					});
-					if (callback) callback(that);
-				},
-				error : function (res) {
-					if (callbackErr) callbackErr(res);
-				}
-			});
-			*/
 		},
 		getRawContent : function() { return this.rawContent; },
 		getCommits : function () { return this.commits; },
@@ -515,23 +485,6 @@
 				}
 			});
 
-			/*
-			$.ajax({
-				url : "https://api.github.com/repos/"+that.user.login+"/"+that.repositoryName+"/contents/"+that.path,
-				data : {ref: that.branchName },
-				dataType: 'jsonp',
-				success : function(res) {
-					_.each(res.data, function (item) {
-						if (item.type == "file") that.contents.push(new Gh3.File(item, that.user, that.repositoryName, that.name));
-						if (item.type == "dir") that.contents.push(new Gh3.Dir(item, that.user, that.repositoryName, that.name));
-					});
-					if (callback) callback(that);
-				},
-				error : function (res) {
-					if (callbackErr) callbackErr(res);
-				}
-			});
-			*/
 		},
 		reverseContents : function () {
 			this.contents.reverse();
@@ -595,23 +548,6 @@
 				}
 			});
 
-			/*
-			$.ajax({
-				url : "https://api.github.com/repos/"+that.user.login+"/"+that.repositoryName+"/contents/",
-				data : {ref: that.name },
-				dataType: 'jsonp',
-				success : function(res) {
-					_.each(res.data, function (item) {
-						if (item.type == "file") that.contents.push(new Gh3.File(item, that.user, that.repositoryName, that.name));
-						if (item.type == "dir") that.contents.push(new Gh3.Dir(item, that.user, that.repositoryName, that.name));
-					});
-					if (callback) callback(that);
-				},
-				error : function (res) {
-					if (callbackErr) callbackErr(res);
-				}
-			});
-			*/
 		},
 		reverseContents : function () {
 			this.contents.reverse();
@@ -646,7 +582,14 @@
 	},{});
 
 	Gh3.Repository = Kind.extend({
-		constructor : function (name, ghUser) {
+		constructor : function (name, ghUser, infos) {
+
+			if (infos) {
+				for(var prop in infos) {
+					this[prop] = infos[prop];
+				}
+			}
+
 			if (name) this.name = name; 
 
 			if (ghUser) this.user = ghUser;
@@ -669,21 +612,6 @@
 				}
 			});
 
-			/*
-			$.ajax({
-				url : "https://api.github.com/repos/"+that.user.login+"/"+that.name,
-				dataType: 'jsonp',
-				success : function(res) {
-					for(var prop in res.data) {
-						that[prop] = res.data[prop];
-					}
-					if (callback) callback(that);
-				},
-				error : function (res) {
-					if (callbackErr) callbackErr(res);
-				}
-			});
-			*/
 		},
 		fetchBranches : function (callback, callbackErr) {
 			var that = this;
@@ -703,22 +631,6 @@
 				}
 			});
 
-			/*
-			$.ajax({
-				url : "https://api.github.com/repos/"+that.user.login+"/"+that.name+"/branches",
-				dataType: 'jsonp',
-				success : function(res) {
-					_.each(res.data, function (branch) {
-						that.branches.push(new Gh3.Branch(branch.name, branch.commit.sha, branch.commit.url, that.user, that.name));
-					});
-					
-					if (callback) callback(that);
-				},
-				error : function (res) {
-					if (callbackErr) callbackErr(res);
-				}
-			});
-			*/
 		},
 		getBranches : function () { return this.branches; },
 		getBranchByName : function (name) {
@@ -801,7 +713,54 @@
 		}		
 
 
-	},{});
+	},{//static members
+		repositories : [],
+		search : function (keyword, callback, callbackErr, pagesInfo) {
+			Gh3.Repositories.repositories = [];
+			Gh3.Helper.callHttpApi({
+				service : "legacy/repos/search/"+keyword,
+				data : pagesInfo,
+				//beforeSend: function (xhr) { xhr.setRequestHeader ("rel", paginationInfo); },
+				success : function(res) {
+					//console.log("*** : ", res);
+					_.each(res.data.repositories, function (repository) {
+						Gh3.Repositories.repositories.push(new Gh3.Repository(repository.name, new Gh3.User(repository.owner), repository));
+						//owner & login : same thing ???
+					});
+					
+					if (callback) callback(Gh3.Repositories);
+				},
+				error : function (res) {
+					if (callbackErr) callbackErr(res);
+				}
+			});
+
+		},
+		reverse : function () {
+			Gh3.Repositories.repositories.reverse();
+		},
+		sort : function (comparison_func) {
+			if (comparison_func) {
+				Gh3.Repositories.repositories.sort(comparison_func);
+			} else {
+				Gh3.Repositories.repositories.sort();
+			}
+		},
+		getAll : function() { return Gh3.Repositories.repositories; },
+		getByName : function (name) {
+			return _.find(Gh3.Repositories.repositories, function (item) {
+				return item.name == name;
+			});
+		},
+		each : function (callback) {
+			_.each(Gh3.Repositories.repositories, function (repository) {
+				callback(repository);
+			});
+		},
+		filter : function (comparator) {
+			return _.filter(Gh3.Repositories.repositories, comparator);
+		}	
+	});
 
 
 	

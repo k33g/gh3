@@ -9,8 +9,9 @@
 
 ##Bundled with gh3 :
 
-gh3 cames with 10 kinds of object's type :
+gh3 cames with 11 kinds of object's type :
 
+- `Gh3.Users`
 - `Gh3.User`
 - `Gh3.Repositories`
 - `Gh3.Repository`
@@ -29,6 +30,21 @@ You can extend all Gh3 types, eg :
 	})
 
 See *§ "Extend User"* for more details.
+
+##GitHub Users : Gh3.Users
+
+###Static Methods of Gh3.Users
+
+- `Gh3.Users.search(keyword, callback, callbackErr, pagesInfo)` retrieve `Gh3.User` instances by keyword
+    - `pagesInfo` : `{ start_page : which_page }` (always 100 items max. per page) see [http://developer.github.com/v3/search/](http://developer.github.com/v3/search/)
+- `Gh3.Users.getAll()` : return an array of all `Gh3.User` instances (you have to call `search()` before)
+- `Gh3.Users.getByName(name)` : get a user by his name (you have to call `search()` before) (return first found user)
+- `Gh3.Users.each(callback)` : execute `callback` for each found users (you have to call `search()` before)
+- `Gh3.Users.reverse()` : reverse order of users (you have to call `fetch()` before)
+- `Gh3.Users.sort(comparator)` : sort users (you have to call `search()` before)
+- `Gh3.Users.filter(comparator)` : return an array of `Gh3.User` instances filtered by `comparator`  (you have to call `search()` before)
+
+See `samples/10-users.html`
 
 ##GitHub User : Gh3.User
 
@@ -101,7 +117,7 @@ See `samples/02-user.html`
 
 ####Methods of Gh3.Repositories
 
-- `fetch(callback, callbackErr, pagesInfoAndParameters, paginationInfo)` retrieve `Gh3.Repositoriy` instances of a user
+- `fetch(callback, callbackErr, pagesInfoAndParameters, paginationInfo)` retrieve `Gh3.Repository` instances of a user
     - `pagesInfoAndParameters` : `{ pages : number_of_pages, per_page : number_of_repositories_per page }`
     - you can pass other parameters as : `direction : "desc"`, see [http://developer.github.com/v3/repos/](http://developer.github.com/v3/repos/)
     - `paginationInfo` : which page. Possible values : see [http://developer.github.com/v3/#pagination](http://developer.github.com/v3/#pagination)
@@ -109,14 +125,26 @@ See `samples/02-user.html`
         * "last"
         * "first"
         * "prev"
-- `getRepositories()` : return an array of `Gh3.Repositoriy` instances (you have to call `fetch()` before)
+- `getRepositories()` : return an array of `Gh3.Repository` instances (you have to call `fetch()` before)
 - `getRepositoryByName(name)` : get a repository by his name (you have to call `fetch()` before)
 - `eachRepository(callback)` : execute `callback` for each repository of the user (you have to call `fetch()` before)
 - `reverseRepositories()` : reverse order of repositories (you have to call `fetch()` before)
 - `sortRepositories(comparator)` : sort repositories (you have to call `fetch()` before)
-- `filterRepositories(comparator)` : return an array of `Gh3.Repositoriy` instances filtered by `comparator`  (you have to call `fetchContents()` before)
+- `filterRepositories(comparator)` : return an array of `Gh3.Repository` instances filtered by `comparator`  (you have to call `fetchContents()` before)
+
+#####Static Methods
+
+- `Gh3.Repositories.search(keyword, callback, callbackErr, pagesInfo)` retrieve `Gh3.Repository` instances by keyword
+    - `pagesInfo` : `{ start_page : which_page }` (always 100 items max. per page) see [http://developer.github.com/v3/search/](http://developer.github.com/v3/search/)
+- `Gh3.Repositories.getAll()` : return an array of all `Gh3.Repository` instances (you have to call `search()` before)
+- `Gh3.Repositories.getByName(name)` : get a repository by his name (you have to call `search()` before) (return first found repository)
+- `Gh3.Repositories.each(callback)` : execute `callback` for each found repositories (you have to call `search()` before)
+- `Gh3.Repositories.reverse()` : reverse order of repositories (you have to call `fetch()` before)
+- `Gh3.Repositories.sort(comparator)` : sort repositories (you have to call `search()` before)
+- `Gh3.Repositories.filter(comparator)` : return an array of `Gh3.Repository` instances filtered by `comparator`  (you have to call `search()` before)
 
 See `samples/03-repository.html`
+See `samples/09-repositories.html`
 
 ##GitHub Repository : Gh3.Repository
 
@@ -396,3 +424,21 @@ See `samples/07-gists.html`
 See `samples/08-gists_comments.html`
 
 ... to be continued
+
+##History
+
+- 2012.07.25 : '0.0.1' : first version
+- 2012.07.26 : '0.0.2' : fixes
+- 2012.07.26 : '0.0.3' : gists pagination
+- 2012.07.28 : '0.0.4' :
+	* refactoring : Gh3.Helper
+	* gists filtering
+	* gist comments filtering
+	* file commits filtering
+	* commits sorting
+	* new Type : Gh3.Repositories (with pagination)
+- 2012.07.29 : '0.0.5' :
+	* Gh3.Repositories : add search ability		
+	* add Gh3.Users : search user ability
+
+
