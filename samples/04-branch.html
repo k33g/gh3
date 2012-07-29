@@ -22,16 +22,17 @@
 
 	var k33gBlog = new Gh3.Repository("k33g.github.com", k33g);
 
-	k33gBlog.fetch(function () {
+	k33gBlog.fetch(function (err, res) {
+		if(err) { throw "outch ..." }
 
 		repoTitle.html(k33gBlog.full_name);
 
-		k33gBlog.fetchBranches(function () {
+		k33gBlog.fetchBranches(function (err, res) {
 
 			var master = k33gBlog.getBranchByName("master");
 			branchTitle.html(master.name + " (" + master.sha + ") :");
 
-			master.fetchContents(function () {
+			master.fetchContents(function (err, res) {
 				master.eachContent(function (content) {
 					branchContents.append('<li>'+content.path+" : "+content.type);
 				});

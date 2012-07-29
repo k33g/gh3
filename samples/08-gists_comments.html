@@ -14,12 +14,16 @@
 
 
 	var PaulIrishGist = new Gh3.Gist({id:"3098860"});
-	PaulIrishGist.fetchContents(function(){
+	PaulIrishGist.fetchContents(function (err, res) {
+		if(err) { throw "outch ..." }
+
 		console.log("PaulIrishGist : ", PaulIrishGist);
 		console.log("Files : ", PaulIrishGist.files);
 		
 		
-		PaulIrishGist.fetchComments(function () {
+		PaulIrishGist.fetchComments(function (err, res) {
+			if(err) { throw "outch ..." }
+				
 			console.log(
 				PaulIrishGist.filterComments(function (comment) {
 					return comment.user.login == "codepo8";

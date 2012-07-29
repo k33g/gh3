@@ -16,13 +16,17 @@
 	var k33g = new Gh3.User("k33g")
 	,	userInfos = $("#user");
 
-	k33g.fetch(function (){
+	k33g.fetch(function (err, resUser){
 
-		console.log(k33g);
+		if(err) {
+			throw "outch ..."
+		}
+		
+		console.log(k33g, resUser);
 
-		_.each(_.keys(k33g), function (prop) {
+		_.each(_.keys(resUser), function (prop) {
 			userInfos.append(
-				$('<li>').append(prop+" : "+k33g[prop])
+				$('<li>').append(prop+" : "+resUser[prop])
 			);
 		});
 

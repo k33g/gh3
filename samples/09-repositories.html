@@ -14,7 +14,9 @@
 <script src="../gh3.js"></script>
 <script>
 	var repositories = $("ul");
-	Gh3.Repositories.search("pdf", function (res) {
+	Gh3.Repositories.search("pdf", null, function (err, res) {
+		if(err) { throw "outch ..." }
+
 		//console.log(Gh3.Repositories.getAll());
 		Gh3.Repositories.each(function (repository) {
 			console.log(repository.name, repository.username, repository.description, repository)

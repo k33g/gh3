@@ -2,6 +2,8 @@
 
 **gh3** is a client-side Javascript API v3 wrapper for GitHub
 
+**gh3** is [async.js](https://github.com/caolan/async) compliant. (thank you to [Atinux](https://github.com/Atinux) and [mklabs](https://github.com/mklabs))
+
 ##Dependencies
 
 - [jQuery](http://jquery.com/)
@@ -35,7 +37,7 @@ See *§ "Extend User"* for more details.
 
 ###Static Methods of Gh3.Users
 
-- `Gh3.Users.search(keyword, callback, callbackErr, pagesInfo)` retrieve `Gh3.User` instances by keyword
+- `Gh3.Users.search(keyword, pagesInfo, callback)` retrieve `Gh3.User` instances by keyword
     - `pagesInfo` : `{ start_page : which_page }` (always 100 items max. per page) see [http://developer.github.com/v3/search/](http://developer.github.com/v3/search/)
 - `Gh3.Users.getAll()` : return an array of all `Gh3.User` instances (you have to call `search()` before)
 - `Gh3.Users.getByName(name)` : get a user by his name (you have to call `search()` before) (return first found user)
@@ -43,6 +45,19 @@ See *§ "Extend User"* for more details.
 - `Gh3.Users.reverse()` : reverse order of users (you have to call `fetch()` before)
 - `Gh3.Users.sort(comparator)` : sort users (you have to call `search()` before)
 - `Gh3.Users.filter(comparator)` : return an array of `Gh3.User` instances filtered by `comparator`  (you have to call `search()` before)
+
+####example :
+
+	Gh3.Users.search("mad", {start_page : 3}, function (err, response) {
+		if(err) {
+			throw "outch ..."
+		}
+		//console.log(Gh3.Users.getAll());
+		console.log(response.getAll());
+		response.each(function (user) {
+			console.log(user.name, user.login, user.repos, user)
+		});
+	});
 
 See `samples/10-users.html`
 
@@ -54,21 +69,18 @@ See `samples/10-users.html`
 
 ####Methods of Gh3.User
 
-- `fetch(callback, callbackErr)` : retrieve GitHub User's informations
+- `fetch(callback)` : retrieve GitHub User's informations
 
 ###Get User data
 
-	k33g.fetch(function (){
-		console.log("Blog : ", k33g.blog);
-		console.log("Name : ", k33g.name);
-		//etc. ...
-	});
+	k33g.fetch(function (err, resUser){
 
-or :
+		if(err) {
+			throw "outch ..."
+		}
 
-	k33g.fetch(function (user){
-		console.log("Blog : ", user.blog);
-		console.log("Name : ", user.name);
+		console.log("Blog : ", resUser.blog); // == k33g.blog
+		console.log("Name : ", resUser.name);
 		//etc. ...
 	});
 
@@ -98,8 +110,13 @@ I've cribbed the [Backbone](http://backbonejs.org/) object model :
 	,	chamerling = new GitHubUser("chamerling");
 	
 	GitHubUser.each(function (user) {
-		user.fetch(function () {
-			console.log(JSON.stringify(user));
+		user.fetch(function (err, resUser) {
+
+			if(err) {
+				throw "outch ..."
+			}
+
+			console.log(JSON.stringify(resUser));
 		});
 	})
 
@@ -117,7 +134,7 @@ See `samples/02-user.html`
 
 ####Methods of Gh3.Repositories
 
-- `fetch(callback, callbackErr, pagesInfoAndParameters, paginationInfo)` retrieve `Gh3.Repository` instances of a user
+- `fetch(pagesInfoAndParameters, paginationInfo, callback)` retrieve `Gh3.Repository` instances of a user
     - `pagesInfoAndParameters` : `{ pages : number_of_pages, per_page : number_of_repositories_per page }`
     - you can pass other parameters as : `direction : "desc"`, see [http://developer.github.com/v3/repos/](http://developer.github.com/v3/repos/)
     - `paginationInfo` : which page. Possible values : see [http://developer.github.com/v3/#pagination](http://developer.github.com/v3/#pagination)
@@ -134,7 +151,7 @@ See `samples/02-user.html`
 
 #####Static Methods
 
-- `Gh3.Repositories.search(keyword, callback, callbackErr, pagesInfo)` retrieve `Gh3.Repository` instances by keyword
+- `Gh3.Repositories.search(keyword, pagesInfo, callback)` retrieve `Gh3.Repository` instances by keyword
     - `pagesInfo` : `{ start_page : which_page }` (always 100 items max. per page) see [http://developer.github.com/v3/search/](http://developer.github.com/v3/search/)
 - `Gh3.Repositories.getAll()` : return an array of all `Gh3.Repository` instances (you have to call `search()` before)
 - `Gh3.Repositories.getByName(name)` : get a repository by his name (you have to call `search()` before) (return first found repository)
@@ -154,15 +171,17 @@ See `samples/09-repositories.html`
 
 	var k33gBlog = new Gh3.Repository("k33g.github.com", k33g);
 
-	k33gBlog.fetch(function () {
+	k33gBlog.fetch(function (err, res) {
+		if(err) { throw "outch ..." }
+
 		console.log(k33gBlog);
 	});
 
 ####Methods of Gh3.Repository
 
 - `getBranches()` : return array of `Gh3.Branch` instances
-- `fetch(callback, callbackErr)` : retrieve repository's informations
-- `fetchBranches(callback, callbackErr)` : retrieve repository's branches (you have to call `fetch()` before)
+- `fetch(callback)` : retrieve repository's informations
+- `fetchBranches(callback)` : retrieve repository's branches (you have to call `fetch()` before)
 - `getBranchByName(branch_name)` : return a `Gh3.Branch` instance found by name (you have to call `fetchBranches()` before)
 - `eachBranch(callback)` : execute `callback` for each branch of the repository (you have to call `fetchBranches()` before)
 - `reverseBranches()` : reverse order of branches
@@ -172,7 +191,9 @@ See `samples/09-repositories.html`
 
 After calling repository `fetch()` method :
 
-	k33gBlog.fetchBranches(function () {
+	k33gBlog.fetchBranches(function (err, res) {
+		if(err) { throw "outch ..." }
+
 		console.log(k33gBlog.getBranches());
 	})
 
@@ -180,7 +201,9 @@ After calling repository `fetch()` method :
 
 You can do that too :
 
-	k33gBlog.fetchBranches(function () {
+	k33gBlog.fetchBranches(function (err, res) {
+		if(err) { throw "outch ..." }
+
 		console.log("Array of branches : ", k33gBlog.getBranches());
 		k33gBlog.eachBranch(function (branch) {
 			console.log(branch.name);
@@ -197,7 +220,7 @@ See `samples/03-repository.html`
 
 ####Methods of Gh3.Branch
 
-- `fetchContents(callback, callbackErr)` : retrieve `Gh3.File` instances and/or `Gh3.Dir` instances of the branch
+- `fetchContents(callback)` : retrieve `Gh3.File` instances and/or `Gh3.Dir` instances of the branch
 - `getContents()` : return array of `Gh3.ItemContent` instances (so `Gh3.File` instances and/or `Gh3.Dir` instances)
 - `getFileByName(file_name)` : return a `Gh3.File` instance found by name (you have to call `fetchContents()` before)
 - `getDirByName(dir_name)` : return a `Gh3.Dir` instance found by name (you have to call `fetchContents()` before)
@@ -213,13 +236,17 @@ You have to declare, get repository informations and fetch branches before calli
 	var k33g = new Gh3.User("k33g")
 	,	k33gBlog = new Gh3.Repository("k33g.github.com", k33g);
 
-	k33gBlog.fetch(function () {
+	k33gBlog.fetch(function (err, res) {
+		if(err) { throw "outch ..." }
 
-		k33gBlog.fetchBranches(function () {
+		k33gBlog.fetchBranches(function (err, res) {
+			if(err) { throw "outch ..." }
 
 			var master = k33gBlog.getBranchByName("master");
 
-			master.fetchContents(function () {
+			master.fetchContents(function (err, res) {
+				if(err) { throw "outch ..." }
+
 				master.eachContent(function (content) {
 					console.log(content.path, content.type);
 				});
@@ -236,8 +263,8 @@ You obtain a list of files and directories. You can directly fetch raw content o
 
 ####Methods of Gh3.File
 
-- `fetchContent(callback, callbackErr)` : retrieve (raw) content of the file
-- `fetchCommits(callback, callbackErr)` : retrieve commits of the file
+- `fetchContent(callback)` : retrieve (raw) content of the file
+- `fetchCommits(callback)` : retrieve commits of the file
 - `getRawContent()` : return raw content of the file (you have to call `fetchContent()` before)
 - `getCommits()` : return array of `Gh3.Commit` instances (you have to call `fetchCommits()` before)
 - `getLastCommit()` : return last `Gh3.Commit` instance
@@ -249,7 +276,8 @@ You obtain a list of files and directories. You can directly fetch raw content o
 
 ###Get raw content of a file
 
-	master.fetchContents(function () {
+	master.fetchContents(function (err, res) {
+		if(err) { throw "outch ..." }
 
 		var myfile = master.getFileByName("index.html");
 
@@ -257,7 +285,9 @@ You obtain a list of files and directories. You can directly fetch raw content o
 			var myfile = master.getContents()[8];
 		*/
 
-		myfile.fetchContent(function () {
+		myfile.fetchContent(function (err, res) {
+			if(err) { throw "outch ..." }
+
 			console.log(myfile.getRawContent());
 		});
 		
@@ -267,7 +297,9 @@ See `samples/05-file.html`
 
 ###Get commits of a file
 
-		myfile.fetchCommits(function () {
+		myfile.fetchCommits(function (err, res) {
+			if(err) { throw "outch ..." }
+
 			console.log(myfile.getCommits()); 
 
 			myfile.eachCommit(function (commit) {
@@ -284,7 +316,7 @@ It works much like a `Gh3.Branch`.
 
 ####Methods of Gh3.Dir
 
-- `fetchContents(callback, callbackErr)` : retrieve `Gh3.File` instances and/or `Gh3.Dir` instances of the directory
+- `fetchContents(callback)` : retrieve `Gh3.File` instances and/or `Gh3.Dir` instances of the directory
 - `getContents()` : return array of `Gh3.ItemContent` instances (so `Gh3.File` instances and/or `Gh3.Dir` instances)
 - `getFileByName(file_name)` : return a `Gh3.File` instance found by name (you have to call `fetchContents()` before)
 - `getDirByName(dir_name)` : return a `Gh3.Dir` instance found by name (you have to call `fetchContents()` before)
@@ -295,11 +327,14 @@ It works much like a `Gh3.Branch`.
 
 ###Get contents of a directory
 
-	master.fetchContents(function () {
+	master.fetchContents(function (err, res) {
+		if(err) { throw "outch ..." }
 
 		var dir = master.getDirByName('_posts');
 
-		dir.fetchContents(function () {
+		dir.fetchContents(function (err, res) {
+			if(err) { throw "outch ..." }
+
 			console.log(dir.getContents());
 			
 			dir.eachContent(function (content) {
@@ -316,7 +351,7 @@ See `samples/06-dir.html`
 
 ####Methods of Gh3.Gists
 
-- `fetch(callback, callbackErr, pagesInfo, paginationInfo)` : retrieve `Gh3.Gist` instances of a user
+- `fetch(pagesInfo, paginationInfo, callback)` : retrieve `Gh3.Gist` instances of a user
     - `pagesInfo` : `{ pages : number_of_pages, per_page : number_of_gists_per page }`
     - `paginationInfo` : which page. Possible values : see [http://developer.github.com/v3/#pagination](http://developer.github.com/v3/#pagination)
         * "next"
@@ -331,7 +366,11 @@ See `samples/06-dir.html`
 
 	var GistsOfK33g = new Gh3.Gists(new Gh3.User("k33g"));
 	
-	GistsOfK33g.fetch(function () {
+	GistsOfK33g.fetch(null, null, function (err, res) {
+		if(err) {
+			throw "outch ..."
+		}
+
 		GistsOfK33g.eachGist(function (gist) {
 			console.log(gist.description, gist.id);
 		});
@@ -339,17 +378,25 @@ See `samples/06-dir.html`
 
 ###Get public gists of a user : five gists of the next page
 
-	GistsOfK33g.fetch(function () {		
+	GistsOfK33g.fetch({page:2, per_page:5}, "next", function (err, res) {
+		if(err) {
+			throw "outch ..."
+		}
+
 		GistsOfK33g.eachGist(function (gist) {
 			console.log(gist.description, gist.id);
 		});
-	},function(){//onerror},{page:2, per_page:5}, "next");
+	};
 
 See `samples/07-gists.html`
 
 ###Get public gists of a user only if they have comment(s)
 
-	AllGistsOfK33g.fetch(function () {
+	AllGistsOfK33g.fetch(function (err, res) {
+		if(err) {
+			throw "outch ..."
+		}
+
 		console.log("Filtered gists : ", AllGistsOfK33g.filter(function (gist) {
 			return gist.comments > 0;
 		}));
@@ -362,8 +409,8 @@ See `samples/07-gists.html`
 
 ####Methods of Gh3.Gist
 
-- `fetchContents(callback, callbackErr)` : retrieve contents (files) of the gist
-- `fetchComments(callback, callbackErr)` : retrieve comments of the gist
+- `fetchContents(callback)` : retrieve contents (files) of the gist
+- `fetchComments(callback)` : retrieve comments of the gist
 - `getFileByName()` : return a file of the gist, found by his name
 - `getFiles()` : return a list of files objects
 - `eachFile(callback)` : execute `callback` for each file of the gist (you have to call `fetchContents()` before)
@@ -375,7 +422,11 @@ See `samples/07-gists.html`
 
 	var oneGist = new Gh3.Gist({id:"2287018"});
 	
-	oneGist.fetchContents(function(){
+	oneGist.fetchContents(function (err, res) {
+		if(err) {
+			throw "outch ..."
+		}
+
 		console.log("oneGist : ", oneGist);
 		console.log("Files : ", oneGist.files);
 		
@@ -394,10 +445,12 @@ See `samples/07-gists.html`
 
 	var anOtherGist = new Gh3.Gist({id:"1096826"});
 
-	anOtherGist.fetchContents(function(){
-		
-		anOtherGist.fetchComments(function () {
-			
+	anOtherGist.fetchContents(function (err, res) {
+		if(err) { throw "outch ..." }
+
+		anOtherGist.fetchComments(function (err, res) {
+			if(err) { throw "outch ..." }
+
 			anOtherGist.eachComment(function (comment) {
 				console.log(comment.body, "By ", comment.user.login);
 			});
@@ -409,9 +462,13 @@ See `samples/07-gists.html`
 ###Filter comments of a public gist
 
 	var PaulIrishGist = new Gh3.Gist({id:"3098860"});
-	PaulIrishGist.fetchContents(function(){
+
+	PaulIrishGist.fetchContents(function (err, res) {
+		if(err) { throw "outch ..." }
 		
-		PaulIrishGist.fetchComments(function () {
+		PaulIrishGist.fetchComments(function (err, res) {
+			if(err) { throw "outch ..." }
+
 			console.log(
 				PaulIrishGist.filterComments(function (comment) {
 					return comment.user.login == "codepo8";
@@ -440,5 +497,6 @@ See `samples/08-gists_comments.html`
 - 2012.07.29 : '0.0.5' :
 	* Gh3.Repositories : add search ability		
 	* add Gh3.Users : search user ability
-
+- 2012.07.29 : '0.0.6' :
+	* async.js compliant
 

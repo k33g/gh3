@@ -34,12 +34,17 @@
 	,	usersInfos = $("#users");
 	
 	GitHubUser.each(function (user) {
-		user.fetch(function () {
-			usersInfos.append("<li><ul id='"+user.login+"'>");
-			var tmp_ul = $("#"+user.login);
-			_.each(_.keys(user), function (prop) {
+		user.fetch(function (err, resUser) {
+
+			if(err) {
+				throw "outch ..."
+			}
+
+			usersInfos.append("<li><ul id='"+resUser.login+"'>");
+			var tmp_ul = $("#"+resUser.login);
+			_.each(_.keys(resUser), function (prop) {
 				tmp_ul.append(
-					$('<li>').append(prop+" : "+user[prop])
+					$('<li>').append(prop+" : "+resUser[prop])
 				);
 			});
 		});

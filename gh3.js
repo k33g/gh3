@@ -20,7 +20,9 @@
 			* new Type : Gh3.Repositories (with pagination)
 		- 2012.07.29 : '0.0.5' :
 			* Gh3.Repositories : add search ability		
-			* add Gh3.Users : search user ability	
+			* add Gh3.Users : search user ability
+		- 2012.07.29 : '0.0.6' :
+			* async.js compliant
 */
 
 (function(){
@@ -29,7 +31,7 @@
 	,	Kind
 	,	Base64;
 	
-	Gh3.VERSION = '0.0.5'; //2012.07.29
+	Gh3.VERSION = '0.0.6'; //2012.07.29
 	
 	//Object Model Tools (helpers) like Backbone
 	Kind = function(){};
@@ -170,22 +172,21 @@
 
 	},{//static members
 		users : [],
-		search : function (keyword, callback, callbackErr, pagesInfo) {
+		search : function (keyword, pagesInfo, callback) {
 			Gh3.Users.users = [];
 			Gh3.Helper.callHttpApi({
 				service : "legacy/user/search/"+keyword,
 				data : pagesInfo,
 				//beforeSend: function (xhr) { xhr.setRequestHeader ("rel", paginationInfo); },
 				success : function(res) {
-					//console.log("*** : ", res);
 					_.each(res.data.users, function (user) {
 						Gh3.Users.users.push(new Gh3.User(user.login, user));
 					});
 					
-					if (callback) callback(Gh3.Users);
+					if (callback) callback(null, Gh3.Users);
 				},
 				error : function (res) {
-					if (callbackErr) callbackErr(res);
+					if (callback) callback(new Error(res));
 				}
 			});
 
@@ -233,7 +234,7 @@
 				throw "login !";
 			}
 		},
-		fetch : function (callback, callbackErr) {
+		fetch : function (callback) {
 			var that = this;
 
 			Gh3.Helper.callHttpApi({
@@ -242,10 +243,10 @@
 					for(var prop in res.data) {
 						that[prop] = res.data[prop];
 					}
-					if (callback) callback(that);
+					if (callback) callback(null, that);
 				},
 				error : function (res) {
-					if (callbackErr) callbackErr(res);
+					if (callback) callback(new Error(res));
 				}
 			});
 			
@@ -271,7 +272,7 @@
 				this[prop] = gistData[prop];
 			}
 		},
-		fetchContents : function (callback, callbackErr) {
+		fetchContents : function (callback) {
 			var that = this;
 
 			Gh3.Helper.callHttpApi({
@@ -280,16 +281,16 @@
 					for(var prop in res.data) {
 						that[prop] = res.data[prop];
 					}
-					if (callback) callback(that);
+					if (callback) callback(null, that);
 				},
 				error : function (res) {
-					if (callbackErr) callbackErr(res);
+					if (callback) callback(new Error(res));
 				}
 			});
 
 
 		},
-		fetchComments : function (callback, callbackErr) {
+		fetchComments : function (callback) {
 			var that = this;
 			that.comments = [];
 
@@ -300,10 +301,10 @@
 					_.each(res.data, function (comment) {
 						that.comments.push(new Gh3.GistComment(comment));
 					});
-					if (callback) callback(that);
+					if (callback) callback(null, that);
 				},
 				error : function (res) {
-					if (callbackErr) callbackErr(res);
+					if (callback) callback(new Error(res));
 				}
 			});
 	
@@ -336,7 +337,7 @@
 			if (ghUser) this.user = ghUser;
 			this.gists = []
 		}, 
-		fetch : function (callback, callbackErr, pagesInfo, paginationInfo) {//http://developer.github.com/v3/#pagination
+		fetch : function (pagesInfo, paginationInfo, callback) {//http://developer.github.com/v3/#pagination
 			var that = this;
 
 			Gh3.Helper.callHttpApi({
@@ -347,10 +348,10 @@
 					_.each(res.data, function (gist) {
 						that.gists.push(new Gh3.Gist(gist));
 					});
-					if (callback) callback(that);
+					if (callback) callback(null, that);
 				},
 				error : function (res) {
-					if (callbackErr) callbackErr(res);
+					if (callback) callback(new Error(res));
 				}
 			});
 
@@ -397,7 +398,7 @@
 		constructor : function (contentItem, ghUser, repositoryName, branchName) {
 			Gh3.File.__super__.constructor.call(this, contentItem, ghUser, repositoryName, branchName);
 		},
-		fetchContent : function (callback, callbackErr) {
+		fetchContent : function (callback) {
 			var that = this;
 			
 			Gh3.Helper.callHttpApi({
@@ -406,15 +407,15 @@
 					that.content = res.data.content;
 					that.rawContent = Base64.decode(res.data.content);
 
-					if (callback) callback(that);
+					if (callback) callback(null, that);
 				},
 				error : function (res) {
-					if (callbackErr) callbackErr(res);
+					if (callback) callback(new Error(res));
 				}
 			});
 
 		},
-		fetchCommits : function (callback, callbackErr) {//http://developer.github.com/v3/repos/commits/
+		fetchCommits : function (callback) {//http://developer.github.com/v3/repos/commits/
 			var that = this;
 			that.commits = [];
 
@@ -425,10 +426,10 @@
 					_.each(res.data, function (commit) {
 						that.commits.push(new Gh3.Commit(commit));
 					});
-					if (callback) callback(that);
+					if (callback) callback(null, that);
 				},
 				error : function (res) {
-					if (callbackErr) callbackErr(res);
+					if (callback) callback(new Error(res));
 				}
 			});
 
@@ -466,7 +467,7 @@
 		constructor : function (contentItem, ghUser, repositoryName, branchName) {
 			Gh3.Dir.__super__.constructor.call(this, contentItem, ghUser, repositoryName, branchName);
 		},
-		fetchContents : function (callback, callbackErr) {
+		fetchContents : function (callback) {
 			var that = this;
 			that.contents = [];
 
@@ -478,10 +479,10 @@
 						if (item.type == "file") that.contents.push(new Gh3.File(item, that.user, that.repositoryName, that.name));
 						if (item.type == "dir") that.contents.push(new Gh3.Dir(item, that.user, that.repositoryName, that.name));
 					});
-					if (callback) callback(that);
+					if (callback) callback(null, that);
 				},
 				error : function (res) {
-					if (callbackErr) callbackErr(res);
+					if (callback) callback(new Error(res));
 				}
 			});
 
@@ -529,7 +530,7 @@
 
 		},
 
-		fetchContents : function (callback, callbackErr) { //see how to refactor with Gh3.Dir
+		fetchContents : function (callback) { //see how to refactor with Gh3.Dir
 			var that = this;
 			that.contents = [];
 
@@ -541,10 +542,10 @@
 						if (item.type == "file") that.contents.push(new Gh3.File(item, that.user, that.repositoryName, that.name));
 						if (item.type == "dir") that.contents.push(new Gh3.Dir(item, that.user, that.repositoryName, that.name));
 					});
-					if (callback) callback(that);
+					if (callback) callback(null, that);
 				},
 				error : function (res) {
-					if (callbackErr) callbackErr(res);
+					if (callback) callback(new Error(res));
 				}
 			});
 
@@ -595,7 +596,7 @@
 			if (ghUser) this.user = ghUser;
 
 		},
-		fetch : function (callback, callbackErr) {
+		fetch : function (callback) {
 			var that = this;
 			//TODO test user.login & name
 
@@ -605,15 +606,15 @@
 					for(var prop in res.data) {
 						that[prop] = res.data[prop];
 					}
-					if (callback) callback(that);
+					if (callback) callback(null, that);
 				},
 				error : function (res) {
-					if (callbackErr) callbackErr(res);
+					if (callback) callback(new Error(res));
 				}
 			});
 
 		},
-		fetchBranches : function (callback, callbackErr) {
+		fetchBranches : function (callback) {
 			var that = this;
 			that.branches = [];
 
@@ -624,10 +625,10 @@
 						that.branches.push(new Gh3.Branch(branch.name, branch.commit.sha, branch.commit.url, that.user, that.name));
 					});
 					
-					if (callback) callback(that);
+					if (callback) callback(null, that);
 				},
 				error : function (res) {
-					if (callbackErr) callbackErr(res);
+					if (callback) callback(new Error(res));
 				}
 			});
 
@@ -665,7 +666,7 @@
 
 		},
 		//List user repositories
-		fetch : function (callback, callbackErr, pagesInfoAndParameters, paginationInfo) {//TODO : parameters for all other Gh3.ypes ?
+		fetch : function (pagesInfoAndParameters, paginationInfo, callback) {
 			var that = this;
 			that.repositories = [];
 
@@ -678,10 +679,10 @@
 						that.repositories.push(new Gh3.Repository(repository.name, that.user));
 					});
 					
-					if (callback) callback(that);
+					if (callback) callback(null, that);
 				},
 				error : function (res) {
-					if (callbackErr) callbackErr(res);
+					if (callback) callback(new Error(res));
 				}
 			});
 
@@ -715,7 +716,7 @@
 
 	},{//static members
 		repositories : [],
-		search : function (keyword, callback, callbackErr, pagesInfo) {
+		search : function (keyword, pagesInfo, callback) {
 			Gh3.Repositories.repositories = [];
 			Gh3.Helper.callHttpApi({
 				service : "legacy/repos/search/"+keyword,
@@ -728,10 +729,10 @@
 						//owner & login : same thing ???
 					});
 					
-					if (callback) callback(Gh3.Repositories);
+					if (callback) callback(null, Gh3.Repositories);
 				},
 				error : function (res) {
-					if (callbackErr) callbackErr(res);
+					if (callback) callback(new Error(res));
 				}
 			});
 
