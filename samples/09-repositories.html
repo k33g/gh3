@@ -14,7 +14,7 @@
 <script src="../gh3.js"></script>
 <script>
 	var repositories = $("ul");
-	Gh3.Repositories.search("pdf", null, function (err, res) {
+	Gh3.Repositories.search("pdf", {start_page : 2}, function (err, res) {
 		if(err) { throw "outch ..." }
 
 		//console.log(Gh3.Repositories.getAll());
@@ -24,7 +24,7 @@
 				$('<li>').append(repository.name+" : "+repository.description)
 			);
 		});
-	}, function(){}, {start_page : 2})
+	});
 		
 </script>
 </html>
