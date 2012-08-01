@@ -412,7 +412,7 @@ See `samples/07-gists.html`
 - `fetchContents(callback)` : retrieve contents (files) of the gist
 - `fetchComments(callback)` : retrieve comments of the gist
 - `getFileByName()` : return a file of the gist, found by his name
-- `getFiles()` : return a list of files objects
+- `getFiles()` : return array of files objects
 - `eachFile(callback)` : execute `callback` for each file of the gist (you have to call `fetchContents()` before)
 - `getComments()` : return an array of `Gh3.GistComment` instances
 - `eachComment(callback)` : execute `callback` for each comment of the gist (you have to call `fetchComments()` before)

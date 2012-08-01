@@ -274,18 +274,10 @@
 		},
 		fetchContents : function (callback) {
 			var that = this;
-			that.files = [];
 
 			Gh3.Helper.callHttpApi({
 				service : "gists/"+that.id,
 				success : function(res) {
-
-					for(var file in res.data.files) {
-						that.files.push(res.data.files[file]);
-					}
-
-					delete res.data.files;
-
 					for(var prop in res.data) {
 						that[prop] = res.data[prop];
 					}
@@ -318,18 +310,15 @@
 	
 		},
 		getFileByName : function (name) {
-			return _.find(this.files, function (file) {
-				return file.filename == name;
-			});
+			return this.files[name];
 		},
 		getFiles : function () {
 			return this.files;
 		},
 		eachFile : function (callback) {
-			_.each(this.files, function (file) {
-				callback(file);
-
-			});
+			for(var fileName in this.files) {
+				callback(this.files[fileName]);
+			}
 		},
 		getComments : function () { return this.comments; },
 		eachComment : function (callback) {
