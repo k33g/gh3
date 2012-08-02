@@ -23,15 +23,25 @@
 			* add Gh3.Users : search user ability
 		- 2012.07.29 : '0.0.6' :
 			* async.js compliant
+		- 2012.08.02 : '0.0.7' :
+			* Node compliant for the future ... becareful to dependencies			
 */
 
 (function () {
 
-	var Gh3 = this.Gh3 = {}
+	//var Gh3 = this.Gh3 = {}
+	var root = this
+	,	Gh3
 	,	Kind
 	,	Base64;
 	
-	Gh3.VERSION = '0.0.6'; //2012.07.29
+	if (typeof exports !== 'undefined') {
+		Gh3 = exports;
+	} else {
+		Gh3 = root.Gh3 = {};
+	}
+
+	Gh3.VERSION = '0.0.7'; //2012.08.02
 	
 	//Object Model Tools (helpers) like Backbone
 	Kind = function(){};
