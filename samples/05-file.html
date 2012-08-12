@@ -46,6 +46,9 @@
 				//var myfile = master.getContents()[8];
 
 				var myfile = master.getFileByName("index.html");
+
+				console.log("index.html", myfile);
+
 				myfile.fetchContent(function (err, res) {
 					if(err) { throw "outch ..." }
 

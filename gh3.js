@@ -497,8 +497,8 @@
 				data : {ref: that.branchName },
 				success : function(res) {
 					_.each(res.data, function (item) {
-						if (item.type == "file") that.contents.push(new Gh3.File(item, that.user, that.repositoryName, that.name));
-						if (item.type == "dir") that.contents.push(new Gh3.Dir(item, that.user, that.repositoryName, that.name));
+						if (item.type == "file") that.contents.push(new Gh3.File(item, that.user, that.repositoryName, that.branchName));
+						if (item.type == "dir") that.contents.push(new Gh3.Dir(item, that.user, that.repositoryName, that.branchName));
 					});
 					if (callback) callback(null, that);
 				},
@@ -560,6 +560,7 @@
 				data : {ref: that.name },
 				success : function(res) {
 					_.each(res.data, function (item) {
+
 						if (item.type == "file") that.contents.push(new Gh3.File(item, that.user, that.repositoryName, that.name));
 						if (item.type == "dir") that.contents.push(new Gh3.Dir(item, that.user, that.repositoryName, that.name));
 					});
