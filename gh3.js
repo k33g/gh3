@@ -56,9 +56,9 @@
 		};
 		//constructor ....
 		if (protoProps && protoProps.hasOwnProperty('constructor')) {
-		  child = protoProps.constructor;
+			child = protoProps.constructor;
 		} else {
-		  child = function(){ parent.apply(this, arguments); };
+			child = function(){ parent.apply(this, arguments); };
 		}
 	
 		//inherits from parent
@@ -132,36 +132,36 @@
 		},
 
 		encode : function (input) {
-		    var output = "";
-		    var chr1, chr2, chr3, enc1, enc2, enc3, enc4;
-		    var i = 0;
+				var output = "";
+				var chr1, chr2, chr3, enc1, enc2, enc3, enc4;
+				var i = 0;
 
-		    input = Base64._utf8_encode(input);
+				input = Base64._utf8_encode(input);
 
-		    while (i < input.length) {
+				while (i < input.length) {
 
-		        chr1 = input.charCodeAt(i++);
-		        chr2 = input.charCodeAt(i++);
-		        chr3 = input.charCodeAt(i++);
+						chr1 = input.charCodeAt(i++);
+						chr2 = input.charCodeAt(i++);
+						chr3 = input.charCodeAt(i++);
 
-		        enc1 = chr1 >> 2;
-		        enc2 = ((chr1 & 3) << 4) | (chr2 >> 4);
-		        enc3 = ((chr2 & 15) << 2) | (chr3 >> 6);
-		        enc4 = chr3 & 63;
+						enc1 = chr1 >> 2;
+						enc2 = ((chr1 & 3) << 4) | (chr2 >> 4);
+						enc3 = ((chr2 & 15) << 2) | (chr3 >> 6);
+						enc4 = chr3 & 63;
 
-		        if (isNaN(chr2)) {
-		            enc3 = enc4 = 64;
-		        } else if (isNaN(chr3)) {
-		            enc4 = 64;
-		        }
+						if (isNaN(chr2)) {
+								enc3 = enc4 = 64;
+						} else if (isNaN(chr3)) {
+								enc4 = 64;
+						}
 
-		        output = output +
-		        this._keyStr.charAt(enc1) + this._keyStr.charAt(enc2) +
-		        this._keyStr.charAt(enc3) + this._keyStr.charAt(enc4);
+						output = output +
+						this._keyStr.charAt(enc1) + this._keyStr.charAt(enc2) +
+						this._keyStr.charAt(enc3) + this._keyStr.charAt(enc4);
 
-		    }
+				}
 
-		    return output;
+				return output;
 		},
 
 		// private method for UTF-8 decoding
@@ -197,29 +197,29 @@
 
 		// private method for UTF-8 encoding
 		_utf8_encode : function (string) {
-		    string = string.replace(/\r\n/g,"\n");
-		    var utftext = "";
+				string = string.replace(/\r\n/g,"\n");
+				var utftext = "";
 
-		    for (var n = 0; n < string.length; n++) {
+				for (var n = 0; n < string.length; n++) {
 
-		        var c = string.charCodeAt(n);
+						var c = string.charCodeAt(n);
 
-		        if (c < 128) {
-		            utftext += String.fromCharCode(c);
-		        }
-		        else if((c > 127) && (c < 2048)) {
-		            utftext += String.fromCharCode((c >> 6) | 192);
-		            utftext += String.fromCharCode((c & 63) | 128);
-		        }
-		        else {
-		            utftext += String.fromCharCode((c >> 12) | 224);
-		            utftext += String.fromCharCode(((c >> 6) & 63) | 128);
-		            utftext += String.fromCharCode((c & 63) | 128);
-		        }
+						if (c < 128) {
+								utftext += String.fromCharCode(c);
+						}
+						else if((c > 127) && (c < 2048)) {
+								utftext += String.fromCharCode((c >> 6) | 192);
+								utftext += String.fromCharCode((c & 63) | 128);
+						}
+						else {
+								utftext += String.fromCharCode((c >> 12) | 224);
+								utftext += String.fromCharCode(((c >> 6) & 63) | 128);
+								utftext += String.fromCharCode((c & 63) | 128);
+						}
 
-		    }
+				}
 
-		    return utftext;
+				return utftext;
 		}		
 			 
 	}
@@ -227,6 +227,13 @@
 
 	Gh3.Base64 = Base64;
 
+	if (window.XDomainRequest != null) {
+		try {
+			new XDomainRequest()
+			$.support.cors = true
+			$.ajaxSetup.xhr = function() { return new XDomainRequest() }
+		} catch (e) {}
+	}
 
 	Gh3.Helper = Kind.extend({
 
@@ -235,8 +242,18 @@
 		domain : "api.github.com",
 		callHttpApi : function (apiParams) {
 			apiParams.url = Gh3.Helper.protocol + "://" + Gh3.Helper.domain + "/" + apiParams.service;
-			//delete apiParams.service;
-			apiParams.dataType = 'jsonp';
+			if ($.support.cors) {
+				apiParams.headers = { Origin: location.host }
+				var success = apiParams.success
+				if ($.isFunction(success)) {
+					apiParams.success = function (data, textStatus, jqXHR) {
+						success.call(this, {data: data}, textStatus, jqXHR)
+					}
+				}
+			} else {
+				//delete apiParams.service;
+				apiParams.dataType = 'jsonp';
+			}
 
 			$.ajax(apiParams);
 		}
@@ -460,7 +477,7 @@
 			this.author = commitInfos.author;
 			this.author.email = commitInfos.commit.author.email;
 			this.author.name = commitInfos.commit.author.name;
-			this.date =  commitInfos.commit.author.date;
+			this.date =	commitInfos.commit.author.date;
 			this.message = commitInfos.commit.message;
 			this.sha = commitInfos.sha;
 			this.url = commitInfos.url;
