@@ -685,6 +685,43 @@
 
 	},{});
 
+	Gh3.Issue = Kind.extend({
+		constructor : function (number, ghUser, repositoryName, infos) {
+			if (number) this.number = number;
+
+			if (ghUser) this.user = ghUser;
+			if (repositoryName) this.repositoryName = repositoryName;
+
+			if (infos) {
+				for(var prop in infos) {
+					this[prop] = infos[prop];
+				}
+			}
+
+		},
+
+		fetchContents : function (callback) { //see how to refactor with Gh3.Dir
+			var that = this;
+
+			Gh3.Helper.callHttpApi({
+				service : "repos/"+that.user.login+"/"+that.repositoryName+"/issues/"+that.id,
+				success : function(res) {
+					_.each(res.data, function (item) {
+						for(var prop in res.data) {
+							that[prop] = res.data[prop];
+						}
+					});
+					if (callback) callback(null, that);
+				},
+				error : function (res) {
+					if (callback) callback(new Error(res));
+				}
+			});
+
+		}
+
+	},{});
+
 	Gh3.Repository = Kind.extend({
 		constructor : function (name, ghUser, infos) {
 
@@ -736,6 +773,46 @@
 			});
 
 		},
+		fetchIssues : function (callback) {
+			var that = this;
+			that.issues = [];
+
+			Gh3.Helper.callHttpApi({
+				service : "repos/"+that.user.login+"/"+that.name+"/issues",
+				data : {sort: "updated"},
+				success : function(res) {
+					_.each(res.data, function (issue) {
+						that.issues.push(new Gh3.Issue(issue.number, issue.user, that.name, issue));
+					});
+
+					if (callback) callback(null, that);
+				},
+				error : function (res) {
+					if (callback) callback(new Error(res));
+				}
+			});
+
+		},
+		fetchClosedIssues : function (callback) {
+			var that = this;
+			that.issues = [];
+
+			Gh3.Helper.callHttpApi({
+				service : "repos/"+that.user.login+"/"+that.name+"/issues",
+				data : {state: "closed", sort: "updated"},
+				success : function(res) {
+					_.each(res.data, function (issue) {
+						that.issues.push(new Gh3.Issue(issue.number, issue.user, that.name, issue));
+					});
+
+					if (callback) callback(null, that);
+				},
+				error : function (res) {
+					if (callback) callback(new Error(res));
+				}
+			});
+
+		},
 		getBranches : function () { return this.branches; },
 		getBranchByName : function (name) {
 			return _.find(this.branches, function (branch) {
@@ -756,6 +833,15 @@
 			} else {
 				this.branches.sort();
 			}
+		},
+		getIssues : function () { return this.issues; },
+		eachIssue : function (callback) {
+			_.each(this.issues, function (issue) {
+				callback(issue);
+			});
+		},
+		reverseIssues : function () {
+			this.issues.reverse();
 		}
 
 	},{});
