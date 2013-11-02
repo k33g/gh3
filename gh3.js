@@ -19,12 +19,12 @@
 			* commits sorting
 			* new Type : Gh3.Repositories (with pagination)
 		- 2012.07.29 : '0.0.5' :
-			* Gh3.Repositories : add search ability		
+			* Gh3.Repositories : add search ability
 			* add Gh3.Users : search user ability
 		- 2012.07.29 : '0.0.6' :
 			* async.js compliant
 		- 2012.08.02 : '0.0.7' :
-			* Node compliant for the future ... becareful to dependencies			
+			* Node compliant for the future ... becareful to dependencies
 */
 
 (function () {
@@ -34,7 +34,7 @@
 	,	Gh3
 	,	Kind
 	,	Base64;
-	
+
 	if (typeof exports !== 'undefined') {
 		Gh3 = exports;
 	} else {
@@ -42,10 +42,10 @@
 	}
 
 	Gh3.VERSION = '0.0.7'; //2012.08.02
-	
+
 	//Object Model Tools (helpers) like Backbone
 	Kind = function(){};
-	
+
 	Kind.inherits = function (parent, protoProps, staticProps) {
 		var child
 			, ctor = function(){}
@@ -60,75 +60,75 @@
 		} else {
 			child = function(){ parent.apply(this, arguments); };
 		}
-	
+
 		//inherits from parent
 		merge(child, parent);
-	
+
 		ctor.prototype = parent.prototype;
 		child.prototype = new ctor();
-	
+
 		//instance properties
 		if(protoProps) merge(child.prototype, protoProps);
-	
+
 		//static properties
 		if(staticProps) merge(child, staticProps);
-	
+
 		// Correctly set child's `prototype.constructor`.
 		child.prototype.constructor = child;
-	
+
 		// Set a convenience property in case the parent's prototype is needed later.
 		child.__super__ = parent.prototype;
-	
+
 		return child
-	
+
 	};
 	Kind.extend = function (protoProps, staticProps) {
 		var child = Kind.inherits(this, protoProps, staticProps);
 		child.extend = this.extend;
 		return child;
 	};
-	
+
 
 	Base64 = { //http://www.webtoolkit.info/javascript-base64.html
- 
+
 		// private property
 		_keyStr : "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=",
-	 	 
+
 		// public method for decoding
 		decode : function (input) {
 			var output = "";
 			var chr1, chr2, chr3;
 			var enc1, enc2, enc3, enc4;
 			var i = 0;
-	 
+
 			input = input.replace(/[^A-Za-z0-9\+\/\=]/g, "");
-	 
+
 			while (i < input.length) {
-	 
+
 				enc1 = this._keyStr.indexOf(input.charAt(i++));
 				enc2 = this._keyStr.indexOf(input.charAt(i++));
 				enc3 = this._keyStr.indexOf(input.charAt(i++));
 				enc4 = this._keyStr.indexOf(input.charAt(i++));
-	 
+
 				chr1 = (enc1 << 2) | (enc2 >> 4);
 				chr2 = ((enc2 & 15) << 4) | (enc3 >> 2);
 				chr3 = ((enc3 & 3) << 6) | enc4;
-	 
+
 				output = output + String.fromCharCode(chr1);
-	 
+
 				if (enc3 != 64) {
 					output = output + String.fromCharCode(chr2);
 				}
 				if (enc4 != 64) {
 					output = output + String.fromCharCode(chr3);
 				}
-	 
+
 			}
-	 
+
 			output = Base64._utf8_decode(output);
-	 
+
 			return output;
-	 
+
 		},
 
 		encode : function (input) {
@@ -169,11 +169,11 @@
 			var string = "";
 			var i = 0;
 			var c = c1 = c2 = 0;
-	 
+
 			while ( i < utftext.length ) {
-	 
+
 				c = utftext.charCodeAt(i);
-	 
+
 				if (c < 128) {
 					string += String.fromCharCode(c);
 					i++;
@@ -189,9 +189,9 @@
 					string += String.fromCharCode(((c & 15) << 12) | ((c2 & 63) << 6) | (c3 & 63));
 					i += 3;
 				}
-	 
+
 			}
-	 
+
 			return string;
 		},
 
@@ -220,8 +220,8 @@
 				}
 
 				return utftext;
-		}		
-			 
+		}
+
 	}
 
 
@@ -273,7 +273,7 @@
 					_.each(res.data.users, function (user) {
 						Gh3.Users.users.push(new Gh3.User(user.login, user));
 					});
-					
+
 					if (callback) callback(null, Gh3.Users);
 				},
 				error : function (res) {
@@ -310,7 +310,7 @@
 	});
 
 	Gh3.User = Kind.extend({
-	
+
 		constructor : function (login, user_infos) {
 
 			if (user_infos) {
@@ -320,8 +320,8 @@
 			}
 
 			if (login) {
-				this.login = login; 
-			} else { 
+				this.login = login;
+			} else {
 				throw "login !";
 			}
 		},
@@ -340,12 +340,12 @@
 					if (callback) callback(new Error(res));
 				}
 			});
-			
+
 		}
-		
-		
+
+
 	},{});
-	
+
 
 	/*Gists*/
 
@@ -406,7 +406,7 @@
 					if (callback) callback(new Error(res));
 				}
 			});
-	
+
 		},
 		getFileByName : function (name) {
 			return _.find(this.files, function (file) {
@@ -438,7 +438,7 @@
 		constructor : function (ghUser) {
 			if (ghUser) this.user = ghUser;
 			this.gists = []
-		}, 
+		},
 		fetch : function (pagesInfo, paginationInfo, callback) {//http://developer.github.com/v3/#pagination
 			var that = this;
 
@@ -502,7 +502,7 @@
 		},
 		fetchContent : function (callback) {
 			var that = this;
-			
+
 			Gh3.Helper.callHttpApi({
 				service : "repos/"+that.user.login+"/"+that.repositoryName+"/contents/"+that.path,
 				success : function(res) {
@@ -682,7 +682,44 @@
 		filterContents : function (comparator) {
 			return _.filter(this.contents, comparator);
 		}
-		
+
+	},{});
+
+	Gh3.Issue = Kind.extend({
+		constructor : function (number, ghUser, repositoryName, infos) {
+			if (number) this.number = number;
+
+			if (ghUser) this.user = ghUser;
+			if (repositoryName) this.repositoryName = repositoryName;
+
+			if (infos) {
+				for(var prop in infos) {
+					this[prop] = infos[prop];
+				}
+			}
+
+		},
+
+		fetchContents : function (callback) { //see how to refactor with Gh3.Dir
+			var that = this;
+
+			Gh3.Helper.callHttpApi({
+				service : "repos/"+that.user.login+"/"+that.repositoryName+"/issues/"+that.id,
+				success : function(res) {
+					_.each(res.data, function (item) {
+						for(var prop in res.data) {
+							that[prop] = res.data[prop];
+						}
+					});
+					if (callback) callback(null, that);
+				},
+				error : function (res) {
+					if (callback) callback(new Error(res));
+				}
+			});
+
+		}
+
 	},{});
 
 	Gh3.Repository = Kind.extend({
@@ -694,7 +731,7 @@
 				}
 			}
 
-			if (name) this.name = name; 
+			if (name) this.name = name;
 
 			if (ghUser) this.user = ghUser;
 
@@ -727,7 +764,47 @@
 					_.each(res.data, function (branch) {
 						that.branches.push(new Gh3.Branch(branch.name, branch.commit.sha, branch.commit.url, that.user, that.name));
 					});
-					
+
+					if (callback) callback(null, that);
+				},
+				error : function (res) {
+					if (callback) callback(new Error(res));
+				}
+			});
+
+		},
+		fetchIssues : function (callback) {
+			var that = this;
+			that.issues = [];
+
+			Gh3.Helper.callHttpApi({
+				service : "repos/"+that.user.login+"/"+that.name+"/issues",
+				data : {sort: "updated"},
+				success : function(res) {
+					_.each(res.data, function (issue) {
+						that.issues.push(new Gh3.Issue(issue.number, issue.user, that.name, issue));
+					});
+
+					if (callback) callback(null, that);
+				},
+				error : function (res) {
+					if (callback) callback(new Error(res));
+				}
+			});
+
+		},
+		fetchClosedIssues : function (callback) {
+			var that = this;
+			that.issues = [];
+
+			Gh3.Helper.callHttpApi({
+				service : "repos/"+that.user.login+"/"+that.name+"/issues",
+				data : {state: "closed", sort: "updated"},
+				success : function(res) {
+					_.each(res.data, function (issue) {
+						that.issues.push(new Gh3.Issue(issue.number, issue.user, that.name, issue));
+					});
+
 					if (callback) callback(null, that);
 				},
 				error : function (res) {
@@ -756,12 +833,21 @@
 			} else {
 				this.branches.sort();
 			}
+		},
+		getIssues : function () { return this.issues; },
+		eachIssue : function (callback) {
+			_.each(this.issues, function (issue) {
+				callback(issue);
+			});
+		},
+		reverseIssues : function () {
+			this.issues.reverse();
 		}
 
 	},{});
 
 	//TODO: Repositories for an organization
-	
+
 	Gh3.Repositories = Kind.extend({//http://developer.github.com/v3/repos/
 		constructor : function (ghUser) {
 
@@ -781,7 +867,7 @@
 					_.each(res.data, function (repository) {
 						that.repositories.push(new Gh3.Repository(repository.name, that.user));
 					});
-					
+
 					if (callback) callback(null, that);
 				},
 				error : function (res) {
@@ -814,7 +900,7 @@
 		},
 		filterRepositories : function (comparator) {
 			return _.filter(this.repositories, comparator);
-		}		
+		}
 
 
 	},{//static members
@@ -831,7 +917,7 @@
 						Gh3.Repositories.repositories.push(new Gh3.Repository(repository.name, new Gh3.User(repository.owner), repository));
 						//owner & login : same thing ???
 					});
-					
+
 					if (callback) callback(null, Gh3.Repositories);
 				},
 				error : function (res) {
@@ -863,9 +949,9 @@
 		},
 		filter : function (comparator) {
 			return _.filter(Gh3.Repositories.repositories, comparator);
-		}	
+		}
 	});
 
 
-	
+
 }).call(this);
