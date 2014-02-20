@@ -500,3 +500,8 @@ See `samples/08-gists_comments.html`
 - 2012.07.29 : '0.0.6' :
 	* async.js compliant
 
+##License
+
+Gh3 is available under the terms of the [MIT-License](http://en.wikipedia.org/wiki/MIT_License#License_terms).
+
+Copyright 2014-2015, Philippe Charrière
