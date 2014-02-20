@@ -8,8 +8,8 @@
 		- ...
 	License
 
-		Gh3 is available under the terms of the [MIT-License](http://en.wikipedia.org/wiki/MIT_License#License_terms).
-		Copyright 2014-2015, Philippe Charrière
+		- Gh3 is available under the terms of the [MIT-License](http://en.wikipedia.org/wiki/MIT_License#License_terms).
+		- Copyright 2014-2015, Philippe Charrière
 
 	History :
 		- 2012.07.25 : '0.0.1' : first version
