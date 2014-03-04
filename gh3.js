@@ -957,5 +957,56 @@
 	});
 
 
+	Gh3.Search = Kind.extend({
+	},{
+		repos : function (params, pagesInfo, callback) {
+			Gh3.Search._template(params, pagesInfo, callback, 'search/repositories',
+								 function (rep) {
+									 return new Gh3.Repository(rep.name, new Gh3.User(rep.owner), rep);
+								 });
+		},
+		code : function (params, pagesInfo, callback) {
+			Gh3.Search._template(params, pagesInfo, callback, 'search/code');
+		},
+		issues : function (params, pagesInfo, callback) {
+			var reg = /.*\/(.*)\/issues\/.*/;
+			Gh3.Search._template(params, pagesInfo, callback, 'search/issues',
+								function (iss) {
+									var rep = reg.exec(iss.html_url);
+									if (rep && rep[1])
+										return new Gh3.Issue(iss.number, iss.user, rep[1], iss);
+									else return null;
+								});
+		},
+		users : function (params, pagesInfo, callback) {
+			Gh3.Search._template(params, pagesInfo, callback, 'search/users',
+								 function (user) {
+									 return new Gh3.User(user.login, user);
+								 });
+		},
+		_template : function (params, pagesInfo, callback, service, createObj) {
+			var data = $.extend({}, params, pagesInfo);
+			Gh3.Helper.callHttpApi({
+				service : service + '?' + decodeURIComponent($.param(data)),
+				success : function(res, text, jq) {
+					var items = [];
+					if (createObj) {
+						_.each(res.data.items, function (item) {
+							var obj = createObj(item);
+							if (obj)
+								items.push(obj);
+						});
+					} else {
+						items = res.data.items;
+					}
+
+					if (callback) callback(null, items);
+				},
+				error : function (res) {
+					if (callback) callback(new Error(res));
+				}
+			});
+		}
+	});
 
 }).call(this);
