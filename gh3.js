@@ -249,7 +249,6 @@
 		callHttpApi : function (apiParams) {
 			apiParams.url = Gh3.Helper.protocol + "://" + Gh3.Helper.domain + "/" + apiParams.service;
 			if ($.support.cors) {
-				apiParams.headers = { Origin: location.host }
 				var success = apiParams.success
 				if ($.isFunction(success)) {
 					apiParams.success = function (data, textStatus, jqXHR) {
