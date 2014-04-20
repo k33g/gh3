@@ -28,7 +28,8 @@
 		- 2012.07.29 : '0.0.6' :
 			* async.js compliant
 		- 2012.08.02 : '0.0.7' :
-			* Node compliant for the future ... becareful to dependencies
+			* Node compliant for the future ... be careful to dependencies
+		- 2014.04.20 : '1.0.0' : bower package + semantic versioning +fixes
 */
 
 (function () {
@@ -45,7 +46,7 @@
 		Gh3 = root.Gh3 = {};
 	}
 
-	Gh3.VERSION = '0.0.7'; //2012.08.02
+	Gh3.VERSION = '1.0.0'; //2014.04.20
 
 	//Object Model Tools (helpers) like Backbone
 	Kind = function(){};
@@ -449,7 +450,7 @@
 			Gh3.Helper.callHttpApi({
 				service : "users/"+that.user.login+"/gists",
 				data : pagesInfo,
-				beforeSend: function (xhr) { xhr.setRequestHeader ("rel", paginationInfo); },
+				//beforeSend: function (xhr) { xhr.setRequestHeader ("rel", paginationInfo); }, --> why (pagination)
 				success : function(res) {
 					_.each(res.data, function (gist) {
 						that.gists.push(new Gh3.Gist(gist));
@@ -866,7 +867,7 @@
 			Gh3.Helper.callHttpApi({
 				service : "users/"+that.user.login+"/repos",
 				data : pagesInfoAndParameters,
-				beforeSend: function (xhr) { xhr.setRequestHeader ("rel", paginationInfo); },
+				//beforeSend: function (xhr) { xhr.setRequestHeader ("rel", paginationInfo); }, --> why ? (pagination)
 				success : function(res) {
 					_.each(res.data, function (repository) {
 						that.repositories.push(new Gh3.Repository(repository.name, that.user));
@@ -875,6 +876,7 @@
 					if (callback) callback(null, that);
 				},
 				error : function (res) {
+          console.log("Gh3.Repositories:error", res)
 					if (callback) callback(new Error(res));
 				}
 			});

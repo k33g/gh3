@@ -8,23 +8,27 @@
 <body>
 
 	<ul></ul>
-</body>
-<script src="../vendors/jquery-1.7.2.js"></script>
-<script src="../vendors/underscore.js"></script>
-<script src="../gh3.js"></script>
-<script>
-	var repositories = $("ul");
-	Gh3.Repositories.search("pdf", {start_page : 2}, function (err, res) {
-		if(err) { throw "outch ..." }
 
-		//console.log(Gh3.Repositories.getAll());
-		Gh3.Repositories.each(function (repository) {
-			console.log(repository.name, repository.username, repository.description, repository)
-			repositories.append(
-				$('<li>').append(repository.name+" : "+repository.description)
-			);
-		});
-	});
-		
-</script>
+  <script src="../vendors/jquery-2.1.0.min.js"></script>
+  <script src="../vendors/underscore-min.js"></script>
+  <script src="../gh3.js"></script>
+  <script>
+    var repositories = $("ul");
+    Gh3.Repositories.search("pdf", {start_page : 1}, function (err, res) {
+      if(err) { throw "outch ..." }
+
+      //console.log(Gh3.Repositories.getAll());
+      Gh3.Repositories.each(function (repository) {
+        console.log(repository.name, repository.username, repository.description, repository)
+        repositories.append(
+          $('<li>').append(repository.name+" : "+repository.description)
+        );
+      });
+    });
+
+  </script>
+
+
+</body>
+
 </html>

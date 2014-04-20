@@ -4,36 +4,38 @@
     <meta charset="utf-8">
     <title>gh3</title>    
 </head>
+
 <body>
 
-</body>
-<script src="../vendors/jquery-1.7.2.js"></script>
-<script src="../vendors/underscore.js"></script>
+<script src="../vendors/jquery-2.1.0.min.js"></script>
+<script src="../vendors/underscore-min.js"></script>
 <script src="../gh3.js"></script>
 <script>
 
 
-	var PaulIrishGist = new Gh3.Gist({id:"3098860"});
-	PaulIrishGist.fetchContents(function (err, res) {
-		if(err) { throw "outch ..." }
+  var PaulIrishGist = new Gh3.Gist({id:"3098860"});
+  PaulIrishGist.fetchContents(function (err, res) {
+    if(err) { throw "outch ..." }
 
-		console.log("PaulIrishGist : ", PaulIrishGist);
-		console.log("Files : ", PaulIrishGist.files);
-		
-		
-		PaulIrishGist.fetchComments(function (err, res) {
-			if(err) { throw "outch ..." }
-				
-			console.log(
-				PaulIrishGist.filterComments(function (comment) {
-					return comment.user.login == "codepo8";
-				})
-			);
-		});
+    console.log("PaulIrishGist : ", PaulIrishGist);
+    console.log("Files : ", PaulIrishGist.files);
 
-	});
-	
 
-		
+    PaulIrishGist.fetchComments(function (err, res) {
+      if(err) { throw "outch ..." }
+
+      console.log(
+        PaulIrishGist.filterComments(function (comment) {
+          return comment.user.login == "codepo8";
+        })
+      );
+    });
+
+  });
+
+
+
 </script>
+</body>
+
 </html>

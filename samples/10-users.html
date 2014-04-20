@@ -8,28 +8,30 @@
 <body>
 
 	<ul></ul>
+
+  <script src="../vendors/jquery-2.1.0.min.js"></script>
+  <script src="../vendors/underscore-min.js"></script>
+  <script src="../gh3.js"></script>
+  <script>
+    var users = $("ul");
+
+
+
+    Gh3.Users.search("mad", {start_page : 3}, function (err, response) {
+      if(err) {
+        throw "outch ..."
+      }
+      //console.log(Gh3.Users.getAll());
+      console.log(response.getAll());
+      response.each(function (user) {
+        console.log(user.name, user.login, user.repos, user)
+        users.append(
+          $('<li>').append(user.login +"("+user.name+") : "+user.language)
+        );
+      });
+    });
+
+  </script>
 </body>
-<script src="../vendors/jquery-1.7.2.js"></script>
-<script src="../vendors/underscore.js"></script>
-<script src="../gh3.js"></script>
-<script>
-	var users = $("ul");
 
-
-
-	Gh3.Users.search("mad", {start_page : 3}, function (err, response) {
-		if(err) {
-			throw "outch ..."
-		}
-		//console.log(Gh3.Users.getAll());
-		console.log(response.getAll());
-		response.each(function (user) {
-			console.log(user.name, user.login, user.repos, user)
-			users.append(
-				$('<li>').append(user.login +"("+user.name+") : "+user.language)
-			);
-		});
-	});
-		
-</script>
 </html>

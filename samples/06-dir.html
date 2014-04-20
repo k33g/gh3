@@ -10,53 +10,54 @@
 	<h2></h2>
 	<ul></ul>
 
+  <script src="../vendors/jquery-2.1.0.min.js"></script>
+  <script src="../vendors/underscore-min.js"></script>
+  <script src="../gh3.js"></script>
+  <script>
+
+    var k33g = new Gh3.User("k33g")
+      ,	repoTitle = $("h1")
+      ,	branchTitle = $("h2")
+      ,	dirContents = $("ul");
+
+    var k33gBlog = new Gh3.Repository("k33g.github.com", k33g);
+
+    k33gBlog.fetch(function (err, res) {
+      if(err) { throw "outch ..." }
+
+      repoTitle.html(k33gBlog.full_name);
+
+      k33gBlog.fetchBranches(function (err, res) {
+        if(err) { throw "outch ..." }
+
+        var master = k33gBlog.getBranchByName("master");
+        branchTitle.html(master.name + " (" + master.sha + ") :");
+
+        master.fetchContents(function (err, res) {
+          if(err) { throw "outch ..." }
+
+          var dir = master.getDirByName('_posts');
+
+          dir.fetchContents(function (err, res) {
+            if(err) { throw "outch ..." }
+
+            console.log(dir.getContents());
+
+            dir.reverseContents();
+
+            dir.eachContent(function (content) {
+              console.log(content.name, content.type, content.size);
+              dirContents.append('<li>'+content.name+" type : "+content.type+" size : "+content.size);
+            });
+          });
+
+        });
+
+      })
+    });
+
+
+  </script>
 </body>
-<script src="../vendors/jquery-1.7.2.js"></script>
-<script src="../vendors/underscore.js"></script>
-<script src="../gh3.js"></script>
-<script>
 
-	var k33g = new Gh3.User("k33g")
-	,	repoTitle = $("h1")
-	,	branchTitle = $("h2")
-	,	dirContents = $("ul");
-
-	var k33gBlog = new Gh3.Repository("k33g.github.com", k33g);
-
-	k33gBlog.fetch(function (err, res) {
-		if(err) { throw "outch ..." }
-
-		repoTitle.html(k33gBlog.full_name);
-
-		k33gBlog.fetchBranches(function (err, res) {
-			if(err) { throw "outch ..." }
-
-			var master = k33gBlog.getBranchByName("master");
-			branchTitle.html(master.name + " (" + master.sha + ") :");
-
-			master.fetchContents(function (err, res) {
-				if(err) { throw "outch ..." }
-
-				var dir = master.getDirByName('_posts');
-
-				dir.fetchContents(function (err, res) {
-					if(err) { throw "outch ..." }
-						
-					console.log(dir.getContents());
-					
-					dir.reverseContents();
-					
-					dir.eachContent(function (content) {
-						console.log(content.name, content.type, content.size);
-						dirContents.append('<li>'+content.name+" type : "+content.type+" size : "+content.size);
-					});
-				});
-				
-			});
-
-		})
-	});
-
-		
-</script>
 </html>

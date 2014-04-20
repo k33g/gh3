@@ -7,49 +7,52 @@
 </head>
 <body>
     <ul id="user"></ul>
+
+    <script src="../vendors/jquery-2.1.0.min.js"></script>
+    <script src="../vendors/underscore-min.js"></script>
+    <script src="../gh3.js"></script>
+    <script>
+      Gh3.Search.issues({
+        q: 'windows+label:bug+language:python+state:open',
+        sort: 'created',
+        order: 'asc'
+      }, {}, function (err, res) {
+        console.log(res);
+      });
+
+      Gh3.Search.users({
+        q: '+language:Python',
+        sort: 'followers'
+      }, {per_page: 50}, function (err, users) {
+        if (err) { throw 'outch ...' }
+
+        console.log(users);
+        _.each(users, function (user) {
+          $('#user').append(
+            $('<li/>').append(
+              $('<a/>')
+                .attr('href', user.html_url)
+                .text(user.login)
+            )
+          );
+        })
+      });
+
+      Gh3.Search.repos({
+        q: 'tetris+language:assembly',
+        sort: 'stars',
+        order: 'desc'
+      }, {}, function (err, repos) {
+        console.log(repos);
+      });
+
+      Gh3.Search.code({
+        q: 'addClass+in:file+language:js+repo:jquery/jquery',
+      }, {}, function (err, code) {
+        console.log(code);
+      });
+    </script>
+
 </body>
-<script src="vendors/jquery-1.7.2.js"></script>
-<script src="vendors/underscore.js"></script>
-<script src="gh3.js"></script>
-<script>
-	Gh3.Search.issues({
-		q: 'windows+label:bug+language:python+state:open',
-		sort: 'created',
-		order: 'asc'
-	}, {}, function (err, res) {
-		console.log(res);
-	});
 
-	Gh3.Search.users({
-		q: '+language:Python',
-		sort: 'followers'
-	}, {per_page: 50}, function (err, users) {
-		if (err) { throw 'outch ...' }
-
-		console.log(users);
-		_.each(users, function (user) {
-			$('#user').append(
-				$('<li/>').append(
-					$('<a/>')
-						.attr('href', user.html_url)
-						.text(user.login)
-				)
-			);
-		})
-	});
-
-	Gh3.Search.repos({
-		q: 'tetris+language:assembly',
-		sort: 'stars',
-		order: 'desc'
-	}, {}, function (err, repos) {
-		console.log(repos);
-	});
-
-	Gh3.Search.code({
-		q: 'addClass+in:file+language:js+repo:jquery/jquery',
-	}, {}, function (err, code) {
-		console.log(code);
-	});
-</script>
 </html>

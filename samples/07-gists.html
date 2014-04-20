@@ -9,87 +9,86 @@
 	<h2></h2>
 	<ul></ul>
 
+  <script src="../vendors/jquery-2.1.0.min.js"></script>
+  <script src="../vendors/underscore-min.js"></script>
+  <script src="../gh3.js"></script>
+  <script>
+
+    var gistsList = $("ul");
+
+    var GistsOfK33g = new Gh3.Gists(new Gh3.User("k33g"));
+
+    GistsOfK33g.fetch({page:1, per_page:15}, "next", function (err, res) {
+
+      if(err) {
+        throw "outch ..."
+      }
+
+      console.log(GistsOfK33g.getGists());
+
+      GistsOfK33g.eachGist(function (gist) {
+        //console.log(gist.description, gist.id);
+        gistsList.append('<li>'+gist.description+" "+gist.id);
+      });
+    });
+
+    var AllGistsOfK33g = new Gh3.Gists(new Gh3.User("k33g"));
+
+    AllGistsOfK33g.fetch({page:1, per_page:500}, null, function (err, res) {
+
+      if(err) {
+        throw "outch ..."
+      }
+      //console.log("All gists : ", AllGistsOfK33g.getGists());
+      console.log("Filtered gists : ", AllGistsOfK33g.filter(function (gist) {
+        return gist.comments > 0;
+      }));
+
+    });
+
+    var oneGist = new Gh3.Gist({id:"2287018"});
+
+    oneGist.fetchContents(function (err, res) {
+
+      if(err) {
+        throw "outch ..."
+      }
+
+      console.log("oneGist : ", oneGist);
+      console.log("Files : ", oneGist.files);
+
+      console.log(oneGist.getFileByName("use.thing.js").content);
+
+      oneGist.eachFile(function (file) {
+        console.log(file.filename, file.language, file.type, file.size);
+      });
+    });
+
+
+    var anOtherGist = new Gh3.Gist({id:"1096826"});
+
+    anOtherGist.fetchContents(function (err, res) {
+
+      if(err) {
+        throw "outch ..."
+      }
+
+      console.log("anOtherGist : ", anOtherGist);
+      console.log("Files : ", anOtherGist.files);
+
+      anOtherGist.fetchComments(function (err, res) {
+
+        if(err) {
+          throw "outch ..."
+        }
+
+        anOtherGist.eachComment(function (comment) {
+          console.log(comment.body, "By ", comment.user.login);
+        });
+      });
+    });
+
+  </script>
 </body>
-<script src="../vendors/jquery-1.7.2.js"></script>
-<script src="../vendors/underscore.js"></script>
-<script src="../gh3.js"></script>
-<script>
 
-	var gistsList = $("ul");
-
-	var GistsOfK33g = new Gh3.Gists(new Gh3.User("k33g"));
-	
-	GistsOfK33g.fetch({page:2, per_page:5}, "next", function (err, res) {
-
-		if(err) {
-			throw "outch ..."
-		}
-
-		console.log(GistsOfK33g.getGists());
-		
-		GistsOfK33g.eachGist(function (gist) {
-			//console.log(gist.description, gist.id);
-			gistsList.append('<li>'+gist.description+" "+gist.id);
-		});
-	});
-
-	var AllGistsOfK33g = new Gh3.Gists(new Gh3.User("k33g"));
-	
-	AllGistsOfK33g.fetch({page:1, per_page:500}, null, function (err, res) {
-
-		if(err) {
-			throw "outch ..."
-		}
-		//console.log("All gists : ", AllGistsOfK33g.getGists());
-		console.log("Filtered gists : ", AllGistsOfK33g.filter(function (gist) {
-			return gist.comments > 0;
-		}));
-		
-	});
-	
-	var oneGist = new Gh3.Gist({id:"2287018"});
-
-	oneGist.fetchContents(function (err, res) {
-
-		if(err) {
-			throw "outch ..."
-		}
-
-		console.log("oneGist : ", oneGist);
-		console.log("Files : ", oneGist.files);
-		
-		console.log(oneGist.getFileByName("use.thing.js").content);
-		
-		oneGist.eachFile(function (file) {
-			console.log(file.filename, file.language, file.type, file.size);
-		});
-	});
-
-	
-	var anOtherGist = new Gh3.Gist({id:"1096826"});
-
-	anOtherGist.fetchContents(function (err, res) {
-
-		if(err) {
-			throw "outch ..."
-		}
-
-		console.log("anOtherGist : ", anOtherGist);
-		console.log("Files : ", anOtherGist.files);
-		
-		anOtherGist.fetchComments(function (err, res) {
-
-			if(err) {
-				throw "outch ..."
-			}
-
-			anOtherGist.eachComment(function (comment) {
-				console.log(comment.body, "By ", comment.user.login);
-			});
-		});
-	});
-	
-
-		
-</script>
 </html>

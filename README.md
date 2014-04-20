@@ -499,6 +499,7 @@ See `samples/08-gists_comments.html`
 	* add Gh3.Users : search user ability
 - 2012.07.29 : '0.0.6' :
 	* async.js compliant
+- 2014.04.20 : '1.0.0' : bower package + semantic versioning +fixes
 
 ##License
 

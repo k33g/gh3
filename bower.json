@@ -1,0 +1,17 @@
+{
+  "name": "gh3",
+  "main": "gh3.js",
+  "version": "1.0.0",
+  "homepage": "https://github.com/k33g/gh3",
+  "authors": [
+    "k33g <ph.charriere@gmail.com>"
+  ],
+  "description": "Client-side Javascript API wrapper for GitHub API V3",
+  "keywords": [
+    "github"
+  ],
+  "dependencies": {
+    "underscore": "1.6.0"
+  },
+  "license": "MIT"
+}

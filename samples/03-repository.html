@@ -9,56 +9,60 @@
 	<h1></h1>
 	<h2></h2>
 	<ul></ul>
+
+  <script src="../vendors/jquery-2.1.0.min.js"></script>
+  <script src="../vendors/underscore-min.js"></script>
+  <script src="../gh3.js"></script>
+  <script>
+
+    var k33g = new Gh3.User("k33g")
+      ,	repoTitle = $("h1")
+      ,	branchTitle = $("h2")
+      ,	branchProperties = $("ul");
+
+    //get some repositories of k33g
+    var k33gRepositories = new Gh3.Repositories(k33g);
+
+    k33gRepositories.fetch({page:5, per_page:5, direction : "desc"},"next", function (err, res) {
+      if(err) {
+        throw "outch ..."
+      }
+
+      console.log("Repositories", k33gRepositories);
+    });
+
+    //get one repository
+    var k33gBlog = new Gh3.Repository("k33g.github.com", k33g);
+
+    k33gBlog.fetch(function (err, res) {
+      if(err) { throw "outch ..." }
+
+      console.log("Repository : ", k33gBlog);
+      repoTitle.html(k33gBlog.full_name);
+
+      k33gBlog.fetchBranches(function (err, res) {
+        if(err) { throw "outch ..." }
+
+        console.log("Array of branches : ", k33gBlog.getBranches());
+        k33gBlog.eachBranch(function (branch) {
+          console.log(branch.name);
+        })
+
+        //and :
+        var master = k33gBlog.getBranchByName("master");
+        branchTitle.html(master.name + " (" + master.sha + ") properties :");
+
+        _.each(_.keys(master), function (prop) {
+          branchProperties.append(
+            $('<li>').append(prop+" : "+master[prop])
+          );
+        });
+
+      })
+    });
+
+
+  </script>
 </body>
-<script src="../vendors/jquery-1.7.2.js"></script>
-<script src="../vendors/underscore.js"></script>
-<script src="../gh3.js"></script>
-<script>
 
-	var k33g = new Gh3.User("k33g")
-	,	repoTitle = $("h1")
-	,	branchTitle = $("h2")
-	,	branchProperties = $("ul");
-
-	//get some repositories of k33g
-	var k33gRepositories = new Gh3.Repositories(k33g);
-	
-	k33gRepositories.fetch({page:5, per_page:5, direction : "desc"},"next", function (err, res) {
-		if(err) { throw "outch ..." }
-
-		console.log("Repositories", k33gRepositories);
-	});
-
-	//get one repository
-	var k33gBlog = new Gh3.Repository("k33g.github.com", k33g);
-
-	k33gBlog.fetch(function (err, res) {
-		if(err) { throw "outch ..." }
-
-		console.log("Repository : ", k33gBlog);
-		repoTitle.html(k33gBlog.full_name);
-
-		k33gBlog.fetchBranches(function (err, res) {
-			if(err) { throw "outch ..." }
-
-			console.log("Array of branches : ", k33gBlog.getBranches());
-			k33gBlog.eachBranch(function (branch) {
-				console.log(branch.name);
-			})
-
-			//and :
-			var master = k33gBlog.getBranchByName("master");
-			branchTitle.html(master.name + " (" + master.sha + ") properties :");
-
-			_.each(_.keys(master), function (prop) {
-				branchProperties.append(
-					$('<li>').append(prop+" : "+master[prop])
-				);
-			});
-
-		})
-	});
-
-		
-</script>
 </html>
