@@ -35,13 +35,19 @@
     var k33gBlog = new Gh3.Repository("k33g.github.com", k33g);
 
     k33gBlog.fetch(function (err, res) {
-      if(err) { throw "outch ..." }
+      if(err) {
+        console.log("Error", err.message, res.status)
+        throw err
+      }
 
       console.log("Repository : ", k33gBlog);
       repoTitle.html(k33gBlog.full_name);
 
       k33gBlog.fetchBranches(function (err, res) {
-        if(err) { throw "outch ..." }
+        if(err) {
+          console.log("Error", err.message, res.status)
+          throw err
+        }
 
         console.log("Array of branches : ", k33gBlog.getBranches());
         k33gBlog.eachBranch(function (branch) {

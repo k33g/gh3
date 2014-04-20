@@ -283,7 +283,7 @@
 					if (callback) callback(null, Gh3.Users);
 				},
 				error : function (res) {
-					if (callback) callback(new Error(res));
+					if (callback) callback(new Error(res.responseJSON.message),res);
 				}
 			});
 
@@ -343,7 +343,7 @@
 					if (callback) callback(null, that);
 				},
 				error : function (res) {
-					if (callback) callback(new Error(res));
+					if (callback) callback(new Error(res.responseJSON.message),res);
 				}
 			});
 
@@ -389,7 +389,7 @@
 					if (callback) callback(null, that);
 				},
 				error : function (res) {
-					if (callback) callback(new Error(res));
+					if (callback) callback(new Error(res.responseJSON.message),res);
 				}
 			});
 
@@ -409,7 +409,7 @@
 					if (callback) callback(null, that);
 				},
 				error : function (res) {
-					if (callback) callback(new Error(res));
+					if (callback) callback(new Error(res.responseJSON.message),res);
 				}
 			});
 
@@ -459,7 +459,7 @@
 					if (callback) callback(null, that);
 				},
 				error : function (res) {
-					if (callback) callback(new Error(res));
+					if (callback) callback(new Error(res.responseJSON.message),res);
 				}
 			});
 
@@ -518,7 +518,7 @@
 					if (callback) callback(null, that);
 				},
 				error : function (res) {
-					if (callback) callback(new Error(res));
+					if (callback) callback(new Error(res.responseJSON.message),res);
 				}
 			});
 
@@ -537,7 +537,7 @@
 					if (callback) callback(null, that);
 				},
 				error : function (res) {
-					if (callback) callback(new Error(res));
+					if (callback) callback(new Error(res.responseJSON.message),res);
 				}
 			});
 
@@ -590,7 +590,7 @@
 					if (callback) callback(null, that);
 				},
 				error : function (res) {
-					if (callback) callback(new Error(res));
+					if (callback) callback(new Error(res.responseJSON.message),res);
 				}
 			});
 
@@ -654,7 +654,7 @@
 					if (callback) callback(null, that);
 				},
 				error : function (res) {
-					if (callback) callback(new Error(res));
+					if (callback) callback(new Error(res.responseJSON.message),res);
 				}
 			});
 
@@ -720,7 +720,7 @@
 					if (callback) callback(null, that);
 				},
 				error : function (res) {
-					if (callback) callback(new Error(res));
+					if (callback) callback(new Error(res.responseJSON.message),res);
 				}
 			});
 
@@ -755,7 +755,8 @@
 					if (callback) callback(null, that);
 				},
 				error : function (res) {
-					if (callback) callback(new Error(res));
+
+					if (callback) callback(new Error(res.responseJSON.message),res);
 				}
 			});
 
@@ -774,7 +775,7 @@
 					if (callback) callback(null, that);
 				},
 				error : function (res) {
-					if (callback) callback(new Error(res));
+					if (callback) callback(new Error(res.responseJSON.message),res);
 				}
 			});
 
@@ -794,7 +795,7 @@
 					if (callback) callback(null, that);
 				},
 				error : function (res) {
-					if (callback) callback(new Error(res));
+					if (callback) callback(new Error(res.responseJSON.message),res);
 				}
 			});
 
@@ -814,7 +815,7 @@
 					if (callback) callback(null, that);
 				},
 				error : function (res) {
-					if (callback) callback(new Error(res));
+					if (callback) callback(new Error(res.responseJSON.message),res);
 				}
 			});
 
@@ -877,8 +878,7 @@
 					if (callback) callback(null, that);
 				},
 				error : function (res) {
-          console.log("Gh3.Repositories:error", res)
-					if (callback) callback(new Error(res));
+					if (callback) callback(new Error(res.responseJSON.message),res);
 				}
 			});
 
@@ -928,7 +928,7 @@
 					if (callback) callback(null, Gh3.Repositories);
 				},
 				error : function (res) {
-					if (callback) callback(new Error(res));
+					if (callback) callback(new Error(res.responseJSON.message),res);
 				}
 			});
 
@@ -1006,7 +1006,7 @@
 					if (callback) callback(null, items);
 				},
 				error : function (res) {
-					if (callback) callback(new Error(res));
+					if (callback) callback(new Error(res.responseJSON.message),res);
 				}
 			});
 		}
