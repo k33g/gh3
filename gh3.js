@@ -29,7 +29,8 @@
 			* async.js compliant
 		- 2012.08.02 : '0.0.7' :
 			* Node compliant for the future ... be careful to dependencies
-		- 2014.04.20 : '1.0.0' : bower package + semantic versioning +fixes
+		- 2014.04.20 : '1.0.0' : bower package + semantic versioning
+    - 2014.04.20 : '1.0.1' : temporary fixes
 */
 
 (function () {
