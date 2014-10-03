@@ -11,12 +11,14 @@
 
 ##Bundled with gh3 :
 
-gh3 cames with 11 kinds of object's type :
+gh3 supports several kind of objects:
 
 - `Gh3.Users`
 - `Gh3.User`
 - `Gh3.Repositories`
 - `Gh3.Repository`
+- `Gh3.Issue`
+- `Gh3.Pull`
 - `Gh3.Branch`
 - `Gh3.Dir` inherits of `Gh3.ItemContent`
 - `Gh3.File` inherits of `Gh3.ItemContent`

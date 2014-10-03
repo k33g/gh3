@@ -727,6 +727,43 @@
 
 	},{});
 
+	Gh3.Pull = Kind.extend({
+		constructor : function (number, ghUser, repositoryName, infos) {
+			if (number) this.number = number;
+
+			if (ghUser) this.user = ghUser;
+			if (repositoryName) this.repositoryName = repositoryName;
+
+			if (infos) {
+				for(var prop in infos) {
+					this[prop] = infos[prop];
+				}
+			}
+
+		},
+
+		fetchContents : function (callback) { //see how to refactor with Gh3.Dir
+			var that = this;
+
+			Gh3.Helper.callHttpApi({
+				service : "repos/"+that.user.login+"/"+that.repositoryName+"/pulls/"+that.id,
+				success : function(res) {
+					_.each(res.data, function (item) {
+						for(var prop in res.data) {
+							that[prop] = res.data[prop];
+						}
+					});
+					if (callback) callback(null, that);
+				},
+				error : function (res) {
+					if (callback) callback(new Error(res.responseJSON.message),res);
+				}
+			});
+
+		}
+
+	},{});
+
 	Gh3.Repository = Kind.extend({
 		constructor : function (name, ghUser, infos) {
 
@@ -819,6 +856,26 @@
 			});
 
 		},
+		fetchPulls : function (callback) {
+			var that = this;
+			that.pulls = [];
+
+			Gh3.Helper.callHttpApi({
+				service : "repos/"+that.user.login+"/"+that.name+"/pulls",
+				data : {sort: "updated"},
+				success : function(res) {
+					_.each(res.data, function (pull) {
+						that.pulls.push(new Gh3.Pull(pull.number, pull.user, that.name, pull));
+					});
+
+					if (callback) callback(null, that);
+				},
+				error : function (res) {
+					if (callback) callback(new Error(res.responseJSON.message),res);
+				}
+			});
+
+		},
 		getBranches : function () { return this.branches; },
 		getBranchByName : function (name) {
 			return _.find(this.branches, function (branch) {
@@ -848,6 +905,15 @@
 		},
 		reverseIssues : function () {
 			this.issues.reverse();
+		},
+		getPulls : function () { return this.pulls; },
+		eachPull : function (callback) {
+			_.each(this.pulls, function (pull) {
+				callback(pull);
+			});
+		},
+		reversePulls : function () {
+			this.pulls.reverse();
 		}
 
 	},{});
