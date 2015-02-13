@@ -477,15 +477,49 @@
 	},{});
 
 
+	Gh3.CommitComment = Kind.extend({
+		constructor : function (commitCommentData) {
+			for(var prop in commitCommentData) {
+				this[prop] = commitCommentData[prop];
+			}
+		}
+	},{});
 	Gh3.Commit = Kind.extend({
-		constructor : function (commitInfos) {
-			this.author = commitInfos.author;
-			this.author.email = commitInfos.commit.author.email;
-			this.author.name = commitInfos.commit.author.name;
+		constructor : function (commitInfos, ghUser, repositoryName) {
+			this.author = commitInfos.commit.author;
 			this.date =	commitInfos.commit.author.date;
 			this.message = commitInfos.commit.message;
 			this.sha = commitInfos.sha;
 			this.url = commitInfos.url;
+
+			if (ghUser) this.user = ghUser;
+			if (repositoryName) this.repositoryName = repositoryName;
+		},
+		fetchComments : function (callback) {
+			var that = this;
+			that.comments = [];
+
+			Gh3.Helper.callHttpApi({
+				service : "repos/"+that.user.login+"/"+that.repositoryName+"/commits/"+that.sha+"/comments",
+				success : function(res) {
+					_.each(res.data, function (comment) {
+						that.comments.push(new Gh3.CommitComment(comment));
+					});
+					if (callback) callback(null, that);
+				},
+				error : function (res) {
+					if (callback) callback(new Error(res.responseJSON.message),res);
+				},
+				beforeSend : function(xhr){
+					xhr.setRequestHeader('Accept','application/vnd.github.v3.full+json');
+				},
+			});
+		},
+		getComments : function () { return this.comments; },
+		eachComment : function (callback) {
+			_.each(this.comments, function (comment) {
+				callback(comment);
+			});
 		}
 	},{});
 
@@ -528,10 +562,10 @@
 
 			Gh3.Helper.callHttpApi({
 				service : "repos/"+that.user.login+"/"+that.repositoryName+"/commits",
-				data : {path: that.path },
+				data : {path: that.path, sha: that.branchName },
 				success : function(res) {
 					_.each(res.data, function (commit) {
-						that.commits.push(new Gh3.Commit(commit));
+						that.commits.push(new Gh3.Commit(commit, that.user, that.repositoryName));
 					});
 					if (callback) callback(null, that);
 				},

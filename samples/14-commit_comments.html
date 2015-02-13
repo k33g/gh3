@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>gh3</title>    
+</head>
+
+<body>
+
+<script src="../vendors/jquery-2.1.0.min.js"></script>
+<script src="../vendors/underscore-min.js"></script>
+<script src="../gh3.js"></script>
+
+<style>
+#comments {
+  list-style: none;
+}
+#comments li {
+  border-bottom: 1px solid #EFEFEF;
+  padding: 2em 0 0.5em 0;
+}
+#comments li img.avatar {
+  float: left;
+  margin-right: 1em;
+  width: 48px;
+  height: 48px;
+}
+#comments li a .date {
+  font-size: 0.9em;
+}
+</style>
+
+<ul id="comments"></ul>
+
+<script>
+  var ghComments = $("#comments"); // Container
+  // This example fetch the comments on the first commit of a post in a blog (jekyll, on github pages)
+  // User -> repo -> branch -> file -> commits -> first commit -> comments
+    var ghUser    = {login: "leivaburto"};
+    var ghRepo    = "leivaburto.github.io"; // Could be also a "project page" (e.g. any repo name) 
+    var ghBranch  = "master"; // In case of a "project page" the branch would be gh-pages instead of master
+    var ghPath    = "_posts/2015-02-12-hello-world.md"; // blog post
+
+    var ghFile = new Gh3.File({path: ghPath}, ghUser, ghRepo, ghBranch);
+
+  ghFile.fetchCommits(function(err, res) {
+    if(err) {
+      console.log("Error", err.message, res.status)
+      throw err
+    }
+    var firstCommit = ghFile.getFirstCommit();
+    firstCommit.fetchComments(function (err, res) {
+      if(err) {
+        console.log("Error", err.message, res.status)
+        throw err
+      }
+      firstCommit.eachComment(function (comment) {
+        // Add comment to list
+        ghComments.append(
+          $('<li>').append(
+            $('<a>', { // Avatar
+              href: comment.user.html_url, target: '_blank'
+            }).append( $('<img>', { src: comment.user.avatar_url, alt: comment.user.id, class: 'avatar' }) )
+          ).append(
+            $('<a>', { // Username
+              href: comment.user.html_url, target: '_blank'
+            }).append( $('<strong>', { html: comment.user.login }) )
+          ).append( // Date
+            $('<span>', { class: 'date', html: ' '+comment.created_at })
+          ).append('<br />'+comment.body_html)
+        );
+      });
+    });
+  });
+  </script>
+
+</body>
+
+</html>
