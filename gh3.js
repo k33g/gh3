@@ -757,6 +757,38 @@
 				}
 			});
 
+		},
+
+		fetchComments : function (callback) { //see how to refactor with Gh3.Dir
+			var that = this;
+
+			Gh3.Helper.callHttpApi({
+				service : "repos/"+that.user.login+"/"+that.repositoryName+"/issues/"+that.number+"/comments",
+				success : function(res) {
+					that['comments'] = res.data;
+					if (callback) callback(null, that);
+				},
+				error : function (res) {
+					if (callback) callback(new Error(res.responseJSON.message),res);
+				}
+			});
+
+		},
+
+		fetchEvents : function (callback) { //see how to refactor with Gh3.Dir
+			var that = this;
+
+			Gh3.Helper.callHttpApi({
+				service : "repos/"+that.user.login+"/"+that.repositoryName+"/issues/"+that.number+"/events",
+				success : function(res) {
+					that['events'] = res.data;
+					if (callback) callback(null, that);
+				},
+				error : function (res) {
+					if (callback) callback(new Error(res.responseJSON.message),res);
+				}
+			});
+
 		}
 
 	},{});
