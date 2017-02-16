@@ -351,7 +351,6 @@
 
 	},{});
 
-
 	/*Gists*/
 
 	Gh3.GistComment = Kind.extend({
@@ -942,6 +941,27 @@
 			});
 
 		},
+		
+		fetchCommits : function (callback) {
+			var that = this;
+			that.commits = [];
+
+			Gh3.Helper.callHttpApi({
+				service : "repos/"+that.user.login+"/"+that.name+"/commits",
+				data : {sort: "updated"},
+				success : function(res) {
+					_.each(res.data, function (commit) {
+						that.commits.push(new Gh3.Commit(commit, that.name, that.repositoryName));
+					});
+
+					if (callback) callback(null, that);
+				},
+				error : function (res) {
+					if (callback) callback(new Error(res.responseJSON.message),res);
+				}
+			});
+
+		},
 		getBranches : function () { return this.branches; },
 		getBranchByName : function (name) {
 			return _.find(this.branches, function (branch) {
@@ -980,7 +1000,9 @@
 		},
 		reversePulls : function () {
 			this.pulls.reverse();
-		}
+		},
+		getCommits : function () {return this.commits;}
+		
 
 	},{});
 
