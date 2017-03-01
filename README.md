@@ -188,6 +188,7 @@ See `samples/09-repositories.html`
 - `eachBranch(callback)` : execute `callback` for each branch of the repository (you have to call `fetchBranches()` before)
 - `reverseBranches()` : reverse order of branches
 - `sortBranches(comparator)` : sort branches
+- `fetchIssuesByLabel` : receive repository issues with certain label or labels
 
 ###Get Branches of Repository
 

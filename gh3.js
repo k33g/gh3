@@ -902,6 +902,31 @@
 			});
 
 		},
+		/**
+		 * @param {string} labels A list of comma separated label names. Example: bug,ui,@high
+		 * @param callback
+		 * @description method that allows to receive repository issues with certain label or labels
+		 */
+        fetchIssuesByLabel : function (labels, callback) {
+            var that = this;
+            that.issues = [];
+
+            Gh3.Helper.callHttpApi({
+                service : "repos/"+that.user.login+"/"+that.name+"/issues",
+                data : {sort: "updated", labels: labels},
+                success : function(res) {
+                    _.each(res.data, function (issue) {
+                        that.issues.push(new Gh3.Issue(issue.number, issue.user, that.name, issue));
+                    });
+
+                    if (callback) callback(null, that);
+                },
+                error : function (res) {
+                    if (callback) callback(new Error(res.responseJSON.message),res);
+                }
+            });
+
+        },
 		fetchClosedIssues : function (callback) {
 			var that = this;
 			that.issues = [];
